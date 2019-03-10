@@ -16,6 +16,10 @@ public class Category {
 	public String getName() {
 		return name;
 	}
+	@Override
+	public String toString() {
+		return "Category [id=" + id + ", name=" + name + "]";
+	}
 	public void setName(String name) {
 		this.name = name == null ? null : name.trim();
 	}
