@@ -1,93 +1,91 @@
 package com.how2java.tmall.util;
-/** 
-* @author Jhowe
-* @version 2019Äê3ÔÂ10ÈÕ ÏÂÎç3:32:12
-* tmall_ssm
-*/
+
 public class Page {
-	 private int start; //¿ªÊ¼Ò³Êı
-	    private int count; //Ã¿Ò³ÏÔÊ¾¸öÊı
-	    private int total; //×Ü¸öÊı
-	    private String param; //²ÎÊı
-	 
-	    private static final int defaultCount = 5; //Ä¬ÈÏÃ¿Ò³ÏÔÊ¾5Ìõ
-	 
-	    public int getStart() {
-	        return start;
-	    }
-	    public void setStart(int start) {
-	        this.start = start;
-	    }
-	    public int getCount() {
-	        return count;
-	    }
-	    public void setCount(int count) {
-	        this.count = count;
-	    }
-	 
-	    public Page (){
-	        count = defaultCount;
-	    }
-	    public Page(int start, int count) {
-	        this();
-	        this.start = start;
-	        this.count = count;
-	    }
-	 
-	    public boolean isHasPreviouse(){
-	        if(start==0)
-	            return false;
-	        return true;
-	    }
-	    public boolean isHasNext(){
-	        if(start==getLast())
-	            return false;
-	        return true;
-	    }
-	 
-	    public int getTotalPage(){
-	        int totalPage;
-	        // ¼ÙÉè×ÜÊıÊÇ50£¬ÊÇÄÜ¹»±»5Õû³ıµÄ£¬ÄÇÃ´¾ÍÓĞ10Ò³
-	        if (0 == total % count)
-	            totalPage = total /count;
-	            // ¼ÙÉè×ÜÊıÊÇ51£¬²»ÄÜ¹»±»5Õû³ıµÄ£¬ÄÇÃ´¾ÍÓĞ11Ò³
-	        else
-	            totalPage = total / count + 1;
-	 
-	        if(0==totalPage)
-	            totalPage = 1;
-	        return totalPage;
-	 
-	    }
-	 
-	    public int getLast(){
-	        int last;
-	        // ¼ÙÉè×ÜÊıÊÇ50£¬ÊÇÄÜ¹»±»5Õû³ıµÄ£¬ÄÇÃ´×îºóÒ»Ò³µÄ¿ªÊ¼¾ÍÊÇ45
-	        if (0 == total % count)
-	            last = total - count;
-	            // ¼ÙÉè×ÜÊıÊÇ51£¬²»ÄÜ¹»±»5Õû³ıµÄ£¬ÄÇÃ´×îºóÒ»Ò³µÄ¿ªÊ¼¾ÍÊÇ50
-	        else
-	            last = total - total % count;
-	        last = last<0?0:last;
-	        return last;
-	    }
-	 
-	    @Override
-	    public String toString() {
-	        return "Page [start=" + start + ", count=" + count + ", total=" + total + ", getStart()=" + getStart()
-	                + ", getCount()=" + getCount() + ", isHasPreviouse()=" + isHasPreviouse() + ", isHasNext()="
-	                + isHasNext() + ", getTotalPage()=" + getTotalPage() + ", getLast()=" + getLast() + "]";
-	    }
-	    public int getTotal() {
-	        return total;
-	    }
-	    public void setTotal(int total) {
-	        this.total = total;
-	    }
-	    public String getParam() {
-	        return param;
-	    }
-	    public void setParam(String param) {
-	        this.param = param;
-	    }
+
+    private int start; //å¼€å§‹é¡µæ•°
+    private int count; //æ¯é¡µæ˜¾ç¤ºä¸ªæ•°
+    private int total; //æ€»ä¸ªæ•°
+    private String param; //å‚æ•°
+
+    private static final int defaultCount = 5; //é»˜è®¤æ¯é¡µæ˜¾ç¤º5æ¡
+
+    public int getStart() {
+        return start;
+    }
+    public void setStart(int start) {
+        this.start = start;
+    }
+    public int getCount() {
+        return count;
+    }
+    public void setCount(int count) {
+        this.count = count;
+    }
+
+    public Page (){
+        count = defaultCount;
+    }
+    public Page(int start, int count) {
+        super();
+        this.start = start;
+        this.count = count;
+    }
+
+    public boolean isHasPreviouse(){
+        if(start==0)
+            return false;
+        return true;
+    }
+    public boolean isHasNext(){
+        if(start==getLast())
+            return false;
+        return true;
+    }
+
+    public int getTotalPage(){
+        int totalPage;
+        // å‡è®¾æ€»æ•°æ˜¯50ï¼Œæ˜¯èƒ½å¤Ÿè¢«5æ•´é™¤çš„ï¼Œé‚£ä¹ˆå°±æœ‰10é¡µ
+        if (0 == total % count)
+            totalPage = total /count;
+            // å‡è®¾æ€»æ•°æ˜¯51ï¼Œä¸èƒ½å¤Ÿè¢«5æ•´é™¤çš„ï¼Œé‚£ä¹ˆå°±æœ‰11é¡µ
+        else
+            totalPage = total / count + 1;
+
+        if(0==totalPage)
+            totalPage = 1;
+        return totalPage;
+
+    }
+
+    public int getLast(){
+        int last;
+        // å‡è®¾æ€»æ•°æ˜¯50ï¼Œæ˜¯èƒ½å¤Ÿè¢«5æ•´é™¤çš„ï¼Œé‚£ä¹ˆæœ€åä¸€é¡µçš„å¼€å§‹å°±æ˜¯45
+        if (0 == total % count)
+            last = total - count;
+            // å‡è®¾æ€»æ•°æ˜¯51ï¼Œä¸èƒ½å¤Ÿè¢«5æ•´é™¤çš„ï¼Œé‚£ä¹ˆæœ€åä¸€é¡µçš„å¼€å§‹å°±æ˜¯50
+        else
+            last = total - total % count;
+        last = last<0?0:last;
+        return last;
+    }
+
+    @Override
+    public String toString() {
+        return "Page [start=" + start + ", count=" + count + ", total=" + total + ", getStart()=" + getStart()
+                + ", getCount()=" + getCount() + ", isHasPreviouse()=" + isHasPreviouse() + ", isHasNext()="
+                + isHasNext() + ", getTotalPage()=" + getTotalPage() + ", getLast()=" + getLast() + "]";
+    }
+    public int getTotal() {
+        return total;
+    }
+    public void setTotal(int total) {
+        this.total = total;
+    }
+    public String getParam() {
+        return param;
+    }
+    public void setParam(String param) {
+        this.param = param;
+    }
+
 }

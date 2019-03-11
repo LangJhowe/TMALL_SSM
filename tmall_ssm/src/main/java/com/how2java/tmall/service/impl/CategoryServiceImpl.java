@@ -1,49 +1,43 @@
 package com.how2java.tmall.service.impl;
-/** 
-* @author Jhowe
-* @version 2019年3月10日 上午3:52:37
-* tmall_ssm
-*/
-
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import com.how2java.tmall.mapper.CategoryMapper;
 import com.how2java.tmall.pojo.Category;
+import com.how2java.tmall.pojo.CategoryExample;
 import com.how2java.tmall.service.CategoryService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
-public class CategoryServiceImpl implements CategoryService{
-	@Autowired
-	CategoryMapper categoryMapper;
-	/*
-	 * public List<Category> list(Page page){ return categoryMapper.list(page); }
-	 */
-	public List<Category> list(){
-		return categoryMapper.list();
-	}
+public class CategoryServiceImpl implements CategoryService {
+    @Autowired
+    CategoryMapper categoryMapper;
 
-	/*
-	 * @Override public int total() { return categoryMapper.total(); }
-	 */
-	@Override
-	public void add(Category category) {
-		categoryMapper.add(category);
-	}
-	@Override
-	public void delete(int id) {
-		categoryMapper.delete(id);
-	}
-	@Override
-	public Category get(int id) {
-		return categoryMapper.get(id);
-	}
-	@Override
-	public void update(Category category) {
-		categoryMapper.update(category);
-		
-	}
-	
+    @Override
+    public List<Category> list() {
+        CategoryExample example =new CategoryExample();
+        example.setOrderByClause("id desc");
+        return categoryMapper.selectByExample(example);
+    }
+
+    @Override
+    public void add(Category category) {
+        categoryMapper.insert(category);
+    }
+
+    @Override
+    public void delete(int id) {
+        categoryMapper.deleteByPrimaryKey(id);
+    }
+
+    @Override
+    public Category get(int id) {
+        return categoryMapper.selectByPrimaryKey(id);
+    }
+
+    @Override
+    public void update(Category category) {
+        categoryMapper.updateByPrimaryKeySelective(category);
+    }
 }
