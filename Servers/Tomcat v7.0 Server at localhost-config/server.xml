@@ -32,7 +32,7 @@
 		
        <Valve className="org.apache.catalina.valves.AccessLogValve" directory="logs" pattern="%h %l %u %t &quot;%r&quot; %s %b" prefix="localhost_access_log." suffix=".txt"/>
 
-      <Context docBase="tmall_ssm" path="/tmall_ssm" reloadable="true" source="org.eclipse.jst.j2ee.server:tmall_ssm"/></Host>
+      <Context docBase="tmall_ssm" path="/tmall_ssm" reloadable="true" source="org.eclipse.jst.jee.server:tmall_ssm"/></Host>
     </Engine>
   </Service>
 </Server>
