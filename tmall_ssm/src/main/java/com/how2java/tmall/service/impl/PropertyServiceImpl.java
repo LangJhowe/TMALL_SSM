@@ -1,0 +1,52 @@
+package com.how2java.tmall.service.impl;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.how2java.tmall.mapper.PropertyMapper;
+import com.how2java.tmall.pojo.Property;
+import com.how2java.tmall.pojo.PropertyExample;
+import com.how2java.tmall.service.PropertyService;
+
+/** 
+* @author Jhowe
+* @version 2019年3月11日 下午5:12:29
+* tmall_ssm
+*/
+@Service
+public class PropertyServiceImpl implements PropertyService{
+	@Autowired
+	PropertyMapper propertyMapper;
+
+	@Override
+	public void add(Property p) {
+		propertyMapper.insert(p);
+	}
+
+	@Override
+	public void delete(int id) {
+		propertyMapper.deleteByPrimaryKey(id);
+	}
+
+	@Override
+	public void update(Property p) {
+		propertyMapper.updateByPrimaryKey(p);
+	}
+
+	@Override
+	public Property get(int id) {
+		return propertyMapper.selectByPrimaryKey(id);
+	}
+
+	@Override
+	public List<Property> list(int cid) {
+		PropertyExample example = new PropertyExample();
+		example.createCriteria().andCidEqualTo(cid);
+		example.setOrderByClause("id desc");
+		return propertyMapper.selectByExample(example);
+	}
+	
+	
+}
