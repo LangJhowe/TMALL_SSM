@@ -28,7 +28,16 @@
         <property name="prefix" value="/WEB-INF/jsp/" />
         <property name="suffix" value=".jsp" />
     </bean>
-
+    
+<!--     接口跨域配置  
+    <mvc:cors>  
+        <mvc:mapping path="/**"  
+                       allowed-origins="*"  
+                       allowed-methods="POST, GET, OPTIONS, DELETE, PUT"  
+                       allowed-headers="Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With"  
+                       allow-credentials="true" />  
+    </mvc:cors> -->
+    
     <!-- 对上传文件的解析-->
     <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver"/>
 </beans>

@@ -32,7 +32,7 @@ public class PropertyServiceImpl implements PropertyService{
 
 	@Override
 	public void update(Property p) {
-		propertyMapper.updateByPrimaryKey(p);
+		propertyMapper.updateByPrimaryKeySelective(p);
 	}
 
 	@Override

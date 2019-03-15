@@ -1,0 +1,11 @@
+@import "./base.scss";
+html,body{min-width: 12.6rem;}
+*[class^="f_"] {
+  .m_container{
+    width: 12.6rem;
+    margin: 0 auto;
+  }
+}
+.head{
+  color:blue;
+}

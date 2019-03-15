@@ -1,0 +1,22 @@
+html,body{
+  font-size: 100px;
+}
+
+ul{margin:0;padding:0}
+li{
+  list-style: none;
+}
+a{text-decoration: none}
+
+.fl{float:left}
+.fr{float:right}
+.clearfix::after{
+  content:' ';
+  clear: both;
+  display: block;
+  height: 0;
+  width: 0;
+  visibility: hidden;
+  overflow: auto;
+  zoom: 1
+}
