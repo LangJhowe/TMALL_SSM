@@ -13,6 +13,17 @@ public class Review {
 
     private Date createDate;
 
+    /*非数据库字段*/
+    private User user;
+    
+    public User getUser() {
+    	return user;
+    }
+    
+    public void setUser(User u) {
+    	this.user = u;
+    }
+    
     public Integer getId() {
         return id;
     }

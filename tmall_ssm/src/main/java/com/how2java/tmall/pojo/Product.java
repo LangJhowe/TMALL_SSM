@@ -22,7 +22,19 @@ public class Product {
     /*非数据库字段*/
     private Category category;
     
-    private ProductImage firstProductImage;
+    @Override
+	public String toString() {
+		return "Product [id=" + id + ", name=" + name + ", subTitle=" + subTitle + ", originalPrice=" + originalPrice
+				+ ", promotePrice=" + promotePrice + ", stock=" + stock + ", cid=" + cid + ", createDate=" + createDate
+				+ ", category=" + category + ", firstProductImage=" + firstProductImage + ", saleCount=" + saleCount
+				+ ", reviewCount=" + reviewCount + "]";
+	}
+
+	private ProductImage firstProductImage;
+    
+    private int saleCount;
+
+	private int reviewCount;
     
     public ProductImage getFirstProductImage() {
     	return firstProductImage;
@@ -42,7 +54,23 @@ public class Product {
         return id;
     }
 
-    public void setId(Integer id) {
+    public int getSaleCount() {
+		return saleCount;
+	}
+
+	public void setSaleCount(int saleCount) {
+		this.saleCount = saleCount;
+	}
+
+	public int getReviewCount() {
+		return reviewCount;
+	}
+
+	public void setReviewCount(int reviewCount) {
+		this.reviewCount = reviewCount;
+	}
+
+	public void setId(Integer id) {
         this.id = id;
     }
 

@@ -7,3 +7,11 @@ export function getRecommendSearch () {
     method: 'get'
   })
 }
+
+// 竖 菜单 获取商品 subtitle
+export function getCategorys (id) {
+  return request({
+    url: `/getCategorys/cid=${id}`,
+    method: 'get'
+  })
+}

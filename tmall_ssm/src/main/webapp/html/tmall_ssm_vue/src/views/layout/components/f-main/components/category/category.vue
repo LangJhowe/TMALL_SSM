@@ -3,10 +3,7 @@
     <nav class="cross-nav">
       <div class="m_container">
         <ul class="left-menu">
-          <li><i
-              class="glyphicon glyphicon-th-list"
-              style="margin: 0 10px"
-            ></i>商品分类</li>
+          <li><i class="glyphicon glyphicon-th-list" style="margin: 0 10px"></i>商品分类</li>
         </ul>
         <ul class="right-menu">
           <li
@@ -70,12 +67,11 @@ export default {
   .cross-nav {
     height: 0.36rem;
     background: #dd2727;
-    overflow: hidden;
     .m_container{display: flex;}
     ul {
+      height: 0.36rem;
       display: flex;
       li {
-        align-items: center;
         line-height: 0.36rem;
         a {
           color: #fff;
@@ -89,6 +85,7 @@ export default {
     .right-menu {
       flex: 1;
       li {
+        cursor: pointer;
         padding: 0 0.2rem;
         a > img {
           height: 0.36rem;
@@ -106,6 +103,7 @@ export default {
           left: 50%;
           transform: translate(-50%, -50%);
           transition: all 0.4s ease-in-out;
+          z-index: -1;
         }
         &:hover::after {
           opacity: 1;
