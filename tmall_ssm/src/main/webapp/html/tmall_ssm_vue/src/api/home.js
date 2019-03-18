@@ -15,3 +15,10 @@ export function getCategorys (id) {
     method: 'get'
   })
 }
+
+export function getProductsByCategory () {
+  return request({
+    url: '/getProductsByCategory',
+    method: 'get'
+  })
+}

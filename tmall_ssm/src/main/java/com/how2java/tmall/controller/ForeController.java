@@ -81,7 +81,23 @@ public class ForeController {
 		  }
 		  jo.put("javaHandle",test);
 		  return JSONObject.toJSON(jo).toString();
-		 
     }
+    
+    @ResponseBody
+    @RequestMapping(value="/getProductsByCategory",method=RequestMethod.GET,produces= {"application/json;charset=UTF-8"})
+    public String getProductsByCategory() {
+    	JSONObject jo = new JSONObject();
+    	try {
+        	List<Category> cs = categoryService.list();
+        	productService.fill(cs);
+    		jo.put("code", "000000");
+    		jo.put("data", cs);
+		} catch (Exception e) {
+    		jo.put("code", "123456");
+    		jo.put("messge", e.toString());
+		}
+    	return JSONObject.toJSONString(jo).toString();
+     }
+    
 
 }

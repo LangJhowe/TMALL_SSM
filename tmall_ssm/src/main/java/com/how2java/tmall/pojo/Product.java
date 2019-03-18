@@ -1,6 +1,7 @@
 package com.how2java.tmall.pojo;
 
 import java.util.Date;
+import java.util.List;
 
 public class Product {
     private Integer id;
@@ -22,6 +23,33 @@ public class Product {
     /*非数据库字段*/
     private Category category;
     
+	private ProductImage firstProductImage;
+    
+    private List<ProductImage> productSingleImages;
+    
+	private List<ProductImage> productDetailImages;
+    
+    private int saleCount;
+
+	private int reviewCount;
+
+
+    public List<ProductImage> getProductSingleImages() {
+		return productSingleImages;
+	}
+
+	public void setProductSingleImages(List<ProductImage> productSingleImages) {
+		this.productSingleImages = productSingleImages;
+	}
+
+	public List<ProductImage> getProductDetailImages() {
+		return productDetailImages;
+	}
+
+	public void setProductDetailImages(List<ProductImage> productDetailImages) {
+		this.productDetailImages = productDetailImages;
+	}
+    
     @Override
 	public String toString() {
 		return "Product [id=" + id + ", name=" + name + ", subTitle=" + subTitle + ", originalPrice=" + originalPrice
@@ -29,12 +57,6 @@ public class Product {
 				+ ", category=" + category + ", firstProductImage=" + firstProductImage + ", saleCount=" + saleCount
 				+ ", reviewCount=" + reviewCount + "]";
 	}
-
-	private ProductImage firstProductImage;
-    
-    private int saleCount;
-
-	private int reviewCount;
     
     public ProductImage getFirstProductImage() {
     	return firstProductImage;
