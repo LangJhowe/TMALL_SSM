@@ -7,18 +7,19 @@
           v-for="item in leftBarItem"
           :key="item.name"
         >
-          <a
+          <router-link
             v-if="item.hasOwnProperty('url')"
-            href="#"
+            :to="item.url"
           >
             <span
               v-if="item.hasOwnProperty('logo')"
               :class="item.logo"
             ></span>
             {{item.name}}
-          </a>
+          </router-link>
           <span v-else>{{item.name}}</span>
         </li>
+        <li class="nav-item fl"><a @click="logout()">退出</a></li>
       </ul>
       <ul class="right fr">
         <li class="nav-item fl"><a href="#">我的订单</a></li>
@@ -32,23 +33,44 @@
 </template>
 
 <script>
+import {mapGetters} from 'vuex'
+import {getUser} from '@/util/auth'
 export default {
   data () {
     return {
-      leftBarItem: [
-        {
+      leftBarItem: {
+        toHome: {
           name: '天猫首页',
           url: '#',
           logo: 'glyphicon glyphicon-home redColor'
         },
-        { name: '喵,欢迎来到天猫' },
-        { name: '测试用户1', url: '##' },
-        { name: '退出', url: '#' }
-      ],
+        welcome: { name: '喵,欢迎来到天猫' },
+        login: { name: (getUser() && getUser().name) || '请登录', url: '/login' }
+        // logout: { name: '退出', url: '#' }
+      },
       rightBarItem: [
         { name: '我的订单', url: '#' },
         { name: '购物车', logo: '' }
       ]
+    }
+  },
+  computed: {
+    ...mapGetters([
+      'user'
+    ])
+  },
+  methods: {
+    logout () {
+      this.$store.dispatch('logout')
+    }
+  },
+  watch: {
+    user (nval, oval) {
+      if (nval && nval.name) {
+        this.leftBarItem.login.name = nval.name
+      } else {
+        this.leftBarItem.login.name = '请登录'
+      }
     }
   }
 }
@@ -66,6 +88,7 @@ export default {
   a {
     color: #999;
     &:hover {
+      cursor: pointer;
       color: #c40000;
     }
   }

@@ -26,7 +26,7 @@
       <img class="cateye" src="/static/img/cateye.png" alt="">
         <ul v-for="item in copyrightsData" :class="item.class" :key="item.class">
           <li v-for="(child,index) in item.children" :key="child.name">
-            <a :href="child.url">{{child.name}}</a><span v-if="(item.class!='tmall-info')&&(index!= item.children.length-1)">|</span>
+            <a :href="child.url" @click="goto()">{{child.name}}</a><span v-if="(item.class!='tmall-info')&&(index!= item.children.length-1)">|</span>
           </li>
         </ul>
         <div class="copyRightYear">© 2003-2016 TMALL.COM 版权所有</div>
@@ -147,7 +147,6 @@ export default {
 
 <style lang="scss">
 .f_footer{
-  margin-top: 0.1rem;
   position: relative;
   .ensure{
     padding: 0.30rem 0;

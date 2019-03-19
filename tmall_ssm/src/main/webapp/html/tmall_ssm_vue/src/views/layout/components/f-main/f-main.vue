@@ -17,5 +17,7 @@ export default {
 </script>
 
 <style lang="scss">
-
+.f-main{
+  margin-bottom: 0.1rem;
+}
 </style>

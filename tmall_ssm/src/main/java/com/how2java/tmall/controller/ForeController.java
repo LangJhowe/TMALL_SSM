@@ -5,6 +5,7 @@ import com.how2java.tmall.mapper.CategoryMapper;
 import com.how2java.tmall.pojo.Category;
 import com.how2java.tmall.pojo.CategoryExample;
 import com.how2java.tmall.pojo.ProductExample;
+import com.how2java.tmall.pojo.User;
 import com.how2java.tmall.pojo.CategoryExample.Criteria;
 import com.how2java.tmall.pojo.Product;
 import com.how2java.tmall.service.*;
@@ -12,11 +13,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.util.HtmlUtils;
 
 import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
 import java.util.ArrayList;
 @Controller
 @RequestMapping("")
@@ -99,5 +109,71 @@ public class ForeController {
     	return JSONObject.toJSONString(jo).toString();
      }
     
+    @RequestMapping(value="/loginByUser",method=RequestMethod.POST,produces= {"application/json;charset=UTF-8"})
+    @ResponseBody
+    public String loginByUser(@RequestBody String param) {
+    	System.out.println("data:"+param);
+    	String[] up= param.split("&");
+    	String username = up[0].split("=")[1];
+    	String password = up[1].split("=")[1];
+    	
+    	User user = userService.get(username,password);
+    	JSONObject resultJo = new JSONObject();
+    	if(null == user) {
+    		resultJo.put("code", "600001");
+    		resultJo.put("msg", "账号密码错误");
+    	}else {
+    		resultJo.put("code", "000000");
+        	resultJo.put("data", user);
+    	}
+    	return JSONObject.toJSONString(resultJo).toString();
+     }
+    @ResponseBody
+    @RequestMapping(value="/registry",method=RequestMethod.POST, produces= {"application/json;charset=UTF-8"})
+    public String registry(@RequestBody String param) {
+    	JSONObject pjo = new JSONObject();
+    	JSONObject jo = new JSONObject();
+    	String[] up = param.split("&");
+    	for(String s:up) {
+    		String key = s.split("=")[0];
+    		String value = s.split("=")[1];
+    		pjo.put(key,value);
+    	}
+    	if(!pjo.containsKey("name")&&!pjo.containsKey("password")){
+    		jo.put("code","600010");
+    		jo.put("msg","缺少字段name、password");	   		
+    	}else if(!pjo.containsKey("name")) {
+    		jo.put("code","600011");
+    		jo.put("msg","缺少字段name");	
+    	}else if(!pjo.containsKey("password")){
+    		jo.put("code","600012");
+    		jo.put("msg","缺少字段password");		
+    	}else if(jo.get("name") == ""&&jo.get("password") =="") {
+    		jo.put("code","600013");
+    		jo.put("msg","用户名和密码不能为空");
+    	} else if(jo.get("name") == "") {
+    		jo.put("code","600014");
+    		jo.put("msg","密码不能为空");
+    	} else if(jo.get("password") == ""){
+    		jo.put("code","600015");
+    		jo.put("msg","用户名和密码不能为空");
+    	}else {
+    		String newName = pjo.get("name").toString();
+    		boolean exist = userService.isExist(newName);
+    		if(exist) {
+    			jo.put("code", "600016");
+    			jo.put("msg", "用户名已经被使用,不能使用");
+    		}else {
+            	User newUser = new User();
+            	newUser.setName(pjo.get("name").toString());
+            	newUser.setPassword(pjo.get("password").toString());
+            	System.out.println(newUser.getName());
+            	userService.add(newUser);
+            	jo.put("code", "000000");
+            	jo.put("msg","成功创建用户");	
+    		}
 
+    	}
+    	return JSONObject.toJSONString(jo).toString();
+    }
 }
