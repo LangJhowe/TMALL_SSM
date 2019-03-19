@@ -5,7 +5,7 @@ const service = axios.create({
   time: 5000, // request timeout
   headers: {
     // 'Content-Type': 'application/json;charset=UTF-8'
-    'Content-Type': 'application/x-www-form-urlencoded'
+    'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
   }
 })
 

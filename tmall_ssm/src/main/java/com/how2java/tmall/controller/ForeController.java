@@ -1,6 +1,8 @@
 package com.how2java.tmall.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.how2java.tmall.mapper.CategoryMapper;
 import com.how2java.tmall.pojo.Category;
 import com.how2java.tmall.pojo.CategoryExample;
@@ -27,6 +29,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.how2java.tmall.util.Page;
+import com.how2java.tmall.util.QSToJSON;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 @Controller
 @RequestMapping("")
@@ -112,20 +119,31 @@ public class ForeController {
     @RequestMapping(value="/loginByUser",method=RequestMethod.POST,produces= {"application/json;charset=UTF-8"})
     @ResponseBody
     public String loginByUser(@RequestBody String param) {
-    	System.out.println("data:"+param);
-    	String[] up= param.split("&");
-    	String username = up[0].split("=")[1];
-    	String password = up[1].split("=")[1];
-    	
-    	User user = userService.get(username,password);
+    	JSONObject upjo = QSToJSON.toJSON(param);
     	JSONObject resultJo = new JSONObject();
-    	if(null == user) {
+    	if(!upjo.containsKey("name")) {
     		resultJo.put("code", "600001");
-    		resultJo.put("msg", "账号密码错误");
+    		resultJo.put("msg", "缺少字段name");
+    	}else if(!upjo.containsKey("password")){
+    		resultJo.put("code", "600002");
+    		resultJo.put("msg", "缺少字段password");
+    	}else if(!upjo.containsKey("name")&&!upjo.containsKey("password")) {
+    		resultJo.put("code", "600003");
+    		resultJo.put("msg", "缺少字段name,password");
     	}else {
-    		resultJo.put("code", "000000");
-        	resultJo.put("data", user);
+        	String username = upjo.get("name").toString();
+        	String password = upjo.get("password").toString();
+        	User user = userService.get(username,password);
+
+        	if(null == user) {
+        		resultJo.put("code", "600004");
+        		resultJo.put("msg", "账号密码错误");
+        	}else {
+        		resultJo.put("code", "000000");
+            	resultJo.put("data", user);
+        	}
     	}
+
     	return JSONObject.toJSONString(resultJo).toString();
      }
     @ResponseBody
@@ -175,5 +193,38 @@ public class ForeController {
 
     	}
     	return JSONObject.toJSONString(jo).toString();
+    }
+    //keywords查询商品
+    @ResponseBody
+    @RequestMapping(value="/searchByKeywords", method=RequestMethod.POST,produces= {"application/json;charset=UTF-8"})
+    public String searchByKeywords(@RequestBody String param) throws Exception {
+    	JSONObject rjo = new JSONObject();
+    	JSONObject kjo = QSToJSON.toJSON(param);
+    	if(!kjo.containsKey("keyword")) {
+        	rjo.put("code", "600021");
+        	rjo.put("msg","缺少字段keyword");	
+    	} else {
+    		Page page = new Page();
+    		if(!kjo.containsKey("page")) {
+    			page.setStart(1);
+    		}else {
+    			page.setStart(Integer.valueOf(kjo.get("page").toString()));
+    		}
+    		PageHelper.offsetPage(page.getStart(), 16);
+    		
+    		String keyword = URLDecoder.decode(kjo.get("keyword").toString(), "UTF-8");
+    		List<Product> ps = productService.search(keyword);
+    		
+    		int total = (int) new PageInfo<>(ps).getTotal();
+    		productService.setSaleAndReviewNumber(ps);
+        	rjo.put("code", "000000");
+        	rjo.put("data",ps);
+        	
+        	
+//        	rjo.put("page", value);
+    	}
+    	
+    	return JSONObject.toJSONString(rjo).toString();
+    	//return "ok";
     }
 }

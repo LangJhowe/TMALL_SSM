@@ -41,7 +41,7 @@ export default {
       leftBarItem: {
         toHome: {
           name: '天猫首页',
-          url: '#',
+          url: '/',
           logo: 'glyphicon glyphicon-home redColor'
         },
         welcome: { name: '喵,欢迎来到天猫' },

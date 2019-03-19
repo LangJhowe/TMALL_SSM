@@ -3,7 +3,7 @@
     <form action="#" @submit.prevent="onSubmit">
       <div class="searchDiv">
         <input v-model="keyword" type="text" placeholder="时尚男鞋 太阳镜">
-        <button type="submit">搜索</button>
+        <button type="submit" @click="search()">搜索</button>
         <ul class="recommend-searchs clearfix">
           <li v-for="(rsItem) in recommendSearchs" :key="rsItem.name"><a href="#">{{rsItem.name}}</a></li>
          </ul>
@@ -33,6 +33,11 @@ export default {
   methods: {
     onSubmit: function () {
       return false
+    },
+    search () {
+      if (this.keyword) {
+        this.$router.push({path: '/search', query: {keyword: this.keyword}})
+      }
     }
   }
 }

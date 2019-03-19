@@ -5,7 +5,7 @@
         <div class="category-title"><h2>{{r.name}}</h2></div>
         <ul class="category-board">
           <li v-for="(item, index) in r.products" v-if="index<5" :key="item.name" class="product-item">
-            <product-card :item="item"></product-card>
+            <hproduct-card :item="item"></hproduct-card>
           </li>
         </ul>
       </div>
@@ -18,12 +18,12 @@
 </template>
 
 <script>
-import ProductCard from '@/components/product-card/product-card'
+import HproductCard from '@/components/hproduct-card/hproduct-card'
 import {getProductsByCategory} from '@/api/home.js'
 import CODES from '@/api/config'
 export default {
   components: {
-    ProductCard
+    HproductCard
   },
   data () {
     return {

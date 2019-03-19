@@ -1,5 +1,5 @@
 <template>
-  <a class="product-card">
+  <a class="hproduct-card">
     <div class="product-img"><img :src="`http://localhost:8080/tmall_ssm/img/productSingle/${item.firstProductImage.id}.jpg`" alt=""></div>
     <div class="product-name">{{item.name}}</div>
     <div class="product-price"><span class="unit">￥</span>{{item.promotePrice}}</div>
@@ -15,7 +15,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.product-card{
+.hproduct-card{
   display: block;
   cursor: pointer;
   background: #fff;

@@ -1,4 +1,5 @@
 import request from '@/util/request'
+import Qs from 'qs'
 
 // 推荐搜索
 export function getRecommendSearch () {
@@ -20,5 +21,14 @@ export function getProductsByCategory () {
   return request({
     url: '/getProductsByCategory',
     method: 'get'
+  })
+}
+
+// searchBykeywords
+export function searchByKeywords (keyword) {
+  return request({
+    url: '/searchByKeywords',
+    method: 'post',
+    data: Qs.stringify({keyword: keyword})
   })
 }
