@@ -32,9 +32,18 @@ import javax.servlet.http.HttpSession;
 import com.how2java.tmall.util.Page;
 import com.how2java.tmall.util.QSToJSON;
 
+import comparator.ProductAllComparator;
+import comparator.ProductDateComparator;
+import comparator.ProductPriceComparator;
+import comparator.ProductReviewComparator;
+import comparator.ProductSaleCountComparator;
+
+import static org.hamcrest.CoreMatchers.nullValue;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Collections;
 @Controller
 @RequestMapping("")
 public class ForeController {
@@ -204,27 +213,113 @@ public class ForeController {
         	rjo.put("code", "600021");
         	rjo.put("msg","缺少字段keyword");	
     	} else {
-    		Page page = new Page();
-    		if(!kjo.containsKey("page")) {
-    			page.setStart(1);
+    		if(kjo.get("keywowrd") == "") {
+    			rjo.put("code", "600022");
+            	rjo.put("msg","缺少参数keyword");		
     		}else {
-    			page.setStart(Integer.valueOf(kjo.get("page").toString()));
+        		Page page = new Page();
+        		int pageSize = 8;
+        		if(!kjo.containsKey("page")) {
+        			page.setStart(0);
+        		}else {
+        			int requestPageStart = Integer.valueOf(kjo.get("page").toString());
+        			int pageStart = requestPageStart>0?requestPageStart-1:0;
+        			page.setStart(pageStart*pageSize);
+        		}
+        		
+        		PageHelper.offsetPage(page.getStart(), pageSize);
+        		String keyword = URLDecoder.decode(kjo.get("keyword").toString(), "UTF-8");
+        		List<Product> ps = productService.search(keyword);
+        		
+        		int total = (int) new PageInfo<>(ps).getTotal();
+        		int pageNum = (int) new PageInfo<>(ps).getPageNum();
+        		int pages = (int) new PageInfo<>(ps).getPages();
+        		
+        		productService.setSaleAndReviewNumber(ps);
+            	rjo.put("code", "000000");
+            	rjo.put("data",ps);
+            	rjo.put("total", total);
+            	rjo.put("pageNum", pageNum);
+            	rjo.put("pages", pages);
     		}
-    		PageHelper.offsetPage(page.getStart(), 16);
-    		
-    		String keyword = URLDecoder.decode(kjo.get("keyword").toString(), "UTF-8");
-    		List<Product> ps = productService.search(keyword);
-    		
-    		int total = (int) new PageInfo<>(ps).getTotal();
-    		productService.setSaleAndReviewNumber(ps);
-        	rjo.put("code", "000000");
-        	rjo.put("data",ps);
-        	
-        	
-//        	rjo.put("page", value);
+
     	}
     	
     	return JSONObject.toJSONString(rjo).toString();
-    	//return "ok";
+    }
+    
+    @ResponseBody
+    @RequestMapping(value="/searchByCategory", method=RequestMethod.POST,produces= {"application/json;charset=UTF-8"})
+    public String searchByCategory(@RequestBody String param) {
+    	JSONObject rjo = new JSONObject();
+    	JSONObject gjo = QSToJSON.toJSON(param);
+    	if(!gjo.containsKey("cid")) {
+    		rjo.put("code", "600031");
+    		rjo.put("msg", "缺少字段cid");
+    	} else {
+    		String sCid = (String) gjo.get("cid");
+    		if(sCid=="") {
+    			rjo.put("code", "600032");
+    			rjo.put("msg","缺少参数cid");
+    		}else {
+    			String sort;
+    			if(!gjo.containsKey("sort")) {
+    				sort = "all";
+    			}else {
+    				sort= gjo.get("sort").toString()==""?"all":gjo.get("sort").toString();
+    				
+    			}
+    			int cid= Integer.parseInt(sCid);
+    			Category c = categoryMapper.selectByPrimaryKey(cid);
+    			if(c==null) System.out.println("cid=" + cid + "null");
+    			productService.fill(c);
+    			List<Product> ps = c.getProducts();
+    			productService.setSaleAndReviewNumber(ps);
+    			
+    			
+    			if(null!=sort) {
+    				switch(sort) {
+    					case "review":
+    						Collections.sort(ps,new ProductReviewComparator());
+    						break;
+    					case "date":
+    						Collections.sort(ps,new ProductDateComparator());
+    						break;
+    					case "saleCount":
+    						Collections.sort(ps,new ProductSaleCountComparator());
+    						break;
+    					case "price":
+    						Collections.sort(ps,new ProductPriceComparator());
+    						break;
+    					case "all":
+    						Collections.sort(ps,new ProductAllComparator());
+    						break;
+    				}
+    			}
+    			
+        		Page page = new Page();
+        		int pageSize = 16;
+        		
+        		if(!gjo.containsKey("page")) {
+        			page.setStart(0);
+        		}else {
+        			int requestPageStart = Integer.valueOf(gjo.get("page").toString());
+        			int pageStart = requestPageStart>0?requestPageStart-1:0;
+        			page.setStart(pageStart*pageSize);
+        		}
+
+        		PageHelper.offsetPage(page.getStart(), pageSize);
+        		int total = (int) new PageInfo<>(ps).getTotal();
+        		int PageNum = (int) new PageInfo<>(ps).getPageNum();
+        		int pages = (int) new PageInfo<>(ps).getPages();
+        		
+    			rjo.put("code", "000000");
+    			rjo.put("data",ps);
+    			rjo.put("total",total);
+    			rjo.put("PageNum",PageNum);
+    			rjo.put("pages",pages);
+    		}
+    	}
+    	return JSONObject.toJSONString(rjo).toString();
     }
 }

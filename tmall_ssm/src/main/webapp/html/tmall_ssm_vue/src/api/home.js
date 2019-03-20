@@ -25,10 +25,19 @@ export function getProductsByCategory () {
 }
 
 // searchBykeywords
-export function searchByKeywords (keyword) {
+export function searchByKeywords (form) {
   return request({
     url: '/searchByKeywords',
     method: 'post',
-    data: Qs.stringify({keyword: keyword})
+    data: Qs.stringify(form)
+  })
+}
+
+// searchByCategory
+export function searchByCategory (form) {
+  return request({
+    url: '/searchByCategory',
+    method: 'post',
+    data: Qs.stringify(form)
   })
 }

@@ -24,7 +24,7 @@ public class Category {
         return name;
     }
 
-    public void setName(String name) {
+	public void setName(String name) {
         this.name = name == null ? null : name.trim();
     }
     public List<Product> getProducts() {

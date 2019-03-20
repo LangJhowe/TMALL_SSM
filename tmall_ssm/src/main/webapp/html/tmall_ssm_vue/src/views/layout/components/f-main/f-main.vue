@@ -1,7 +1,8 @@
 <template>
   <main class="f_main">
-    <category></category>
-    <products-wall></products-wall>
+    <keep-alive>
+      <router-view></router-view>
+    </keep-alive>
   </main>
 </template>
 

@@ -5,7 +5,7 @@
         <input v-model="keyword" type="text" placeholder="时尚男鞋 太阳镜">
         <button type="submit" @click="search()">搜索</button>
         <ul class="recommend-searchs clearfix">
-          <li v-for="(rsItem) in recommendSearchs" :key="rsItem.name"><a href="#">{{rsItem.name}}</a></li>
+          <li v-for="(rsItem) in recommendSearchs" :key="rsItem.name"><router-link :to="`/category?cid=${rsItem.id}`">{{rsItem.name}}</router-link></li>
          </ul>
       </div>
     </form>
@@ -14,6 +14,7 @@
 
 <script>
 import CODES from '@/api/config'
+// import {searchByKeywords} from '@/api/home'
 
 export default {
   data () {
@@ -35,9 +36,17 @@ export default {
       return false
     },
     search () {
-      if (this.keyword) {
-        this.$router.push({path: '/search', query: {keyword: this.keyword}})
-      }
+      var keyword = this.keyword
+      console.log('to search')
+      this.$router.push({path: '/search', query: {keyword: keyword}})
+
+      // if (keyword) {
+      //   searchByKeywords(keyword).then(res => {
+      //     const {data} = res
+      //     if (CODES.SUCCESS == data.code) {
+      //     }
+      //   })
+      // }
     }
   }
 }

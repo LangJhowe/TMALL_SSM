@@ -14,7 +14,16 @@ public class QSToJSON {
 		for(String str : valueAndKey) {
 			String[] vk = str.split("=");
 			String key = vk[0];
-			String value = vk[1];
+			String value="";
+			if(vk.length==1) {
+				value = "";
+			}else if(vk.length==2){
+				value = vk[1];
+			}else {
+				for(int i =1;i<vk.length;i++) {
+					value+=vk[i];
+				}
+			}
 			jo.put(key, value);
 		}
 		return jo;
