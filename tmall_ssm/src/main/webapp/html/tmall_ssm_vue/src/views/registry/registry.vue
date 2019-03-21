@@ -1,14 +1,4 @@
 <template>
-  <div class="registry-page">
-    <nav-topbar></nav-topbar>
-    <div class="f_header">
-      <div class="m_container">
-        <img src="/static/img/simpleLogo.png" alt="">
-        <search></search>
-      </div>
-    </div>
-    <div class="f_main">
-      <!-- :class="{show:!isValidate}" -->
       <div class="m_container">
         <div class="registry-box" v-if="!registrySuccess">
           <div class="m_message" :class="{m_show:!isValidate}" ref="msg"><p>{{message}}</p></div>
@@ -28,22 +18,12 @@
 
         </div>
       </div>
-    </div>
-    <f-footer></f-footer>
-  </div>
 </template>
 
 <script>
-import {NavTopbar, FFooter} from '@/views/layout/components'
-import Search from '@/components/search/search'
 import {registry} from '@/api/loginRegistry'
 import CODES from '@/api/config'
 export default {
-  components: {
-    NavTopbar,
-    FFooter,
-    Search
-  },
   data () {
     return {
       registryForm: {
@@ -105,18 +85,6 @@ export default {
 </script>
 
 <style lang="scss">
-.registry-page{
-  .f_header{
-    .m_container{
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      img{
-        height: 0.2rem;
-      }
-    }
-  }
-  .f_main{
     .m_message{
       opacity: 0;
       display: flex;
@@ -178,6 +146,4 @@ export default {
       font-size: 0.16rem;
       margin-bottom: 0.1rem;
     }
-  }
-}
 </style>

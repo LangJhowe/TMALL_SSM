@@ -3,9 +3,10 @@
     <div class="m_container">
       <div
         class="category-img"
-        v-if="isCategory"
+        v-if="isCategory&&cid!=''"
       >
         <img
+
           :src="`http://localhost:8080/tmall_ssm/img/category/${cid}.jpg`"
           alt=""
         >
@@ -46,6 +47,7 @@
         <li
           class="product"
           v-for="p in productsData"
+          @click="toProductPage(p.id)"
           :key="p.id"
         >
           <div class="info">
@@ -117,6 +119,14 @@ export default {
     },
     fillPrice () {
       this.$emit('fillPrice', this.priceSelected)
+    },
+    resetSortAndPrice () {
+      this.priceSelected.min = ''
+      this.priceSelected.max = ''
+      this.selectedSort = 'all'
+    },
+    toProductPage (pid) {
+      this.$router.push({path: '/extra/product', query: {pid: pid}})
     }
   }
 }

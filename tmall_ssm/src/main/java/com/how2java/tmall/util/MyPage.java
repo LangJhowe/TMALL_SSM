@@ -69,6 +69,7 @@ public class MyPage {
     public int getTotalPage(){
         int totalPage;
         // 假设总数是50，是能够被5整除的，那么就有10页
+        if(0==count) return 0;
         if (0 == total % count)
             totalPage = (int) total /count;
             // 假设总数是51，不能够被5整除的，那么就有11页

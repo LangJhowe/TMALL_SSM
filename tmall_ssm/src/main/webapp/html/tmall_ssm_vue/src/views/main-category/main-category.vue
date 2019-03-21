@@ -2,6 +2,7 @@
   <div class="main-category">
     <div class="m_container">
       <sproduct-wall
+        ref="sproductWall"
         :productsData="productsData"
         :needSort="true"
         :isCategory="true"
@@ -85,16 +86,29 @@ export default {
     changePage (page) {
       this.searchForm.page = page
       this.flashProductData(this.searchForm)
+    },
+    resetSearchForm () {
+      this.searchForm = {
+        cid: this.$route.query.cid,
+        page: 1,
+        sort: 'all',
+        min: '',
+        max: ''
+      }
     }
   },
   watch: {
     $route: {
-      handler: function (val, oval) {
+      handler: function (to, from) {
+        console.log('to', to)
+        console.log('from', from)
         if (!this.$route.query.hasOwnProperty('cid')) return
-        console.log('change')
         var cid = this.$route.query.cid
         if (cid == '') return
+        if (cid == from.query.cid) return
         this.searchForm.cid = cid
+        this.$refs.sproductWall.resetSortAndPrice()
+        this.resetSearchForm()
         this.flashProductData()
       },
       deep: true

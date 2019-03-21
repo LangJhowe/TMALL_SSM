@@ -10,6 +10,9 @@ import com.how2java.tmall.mapper.ProductMapper;
 import com.how2java.tmall.pojo.Category;
 import com.how2java.tmall.pojo.CategoryExample;
 import com.how2java.tmall.pojo.ProductExample;
+import com.how2java.tmall.pojo.ProductImage;
+import com.how2java.tmall.pojo.PropertyValue;
+import com.how2java.tmall.pojo.Review;
 import com.how2java.tmall.pojo.User;
 import com.how2java.tmall.pojo.CategoryExample.Criteria;
 import com.how2java.tmall.pojo.Product;
@@ -72,7 +75,9 @@ public class ForeController {
     OrderService orderService;
     @Autowired
     OrderItemService orderItemService;
-
+    @Autowired
+    ReviewService reviewService;
+    
     @ResponseBody
     @RequestMapping(value="/getRecommendSearch", method=RequestMethod.GET, produces={ "application/json;charset=UTF-8" })
     public String home(Model model) {
@@ -239,12 +244,11 @@ public class ForeController {
         		
         		String keyword = URLDecoder.decode(kjo.get("keyword").toString(), "UTF-8");
         		List<Product> ps = productService.search(keyword);
-        		System.out.println("ps size 1= " + ps.size());
         		int total = (int) new PageInfo<>(ps).getTotal();
         		int pageNum = (int) new PageInfo<>(ps).getPageNum();
         		int pages = (int) new PageInfo<>(ps).getPages();
         		int size = (int) new PageInfo<>(ps).getPageSize();
-        		System.out.println("ps size 2= " + ps.size());
+        		
         		productService.setSaleAndReviewNumber(ps);
             	rjo.put("code", "000000");
             	rjo.put("data",ps);
@@ -431,4 +435,87 @@ public class ForeController {
     	}
     	return JSONObject.toJSONString(rjo).toString();
     }
+    
+    @ResponseBody
+    @RequestMapping(value="/getProduct",method=RequestMethod.POST,produces
+    = {"application/json;charset=UTF-8"})
+    public String getProduct(@RequestBody String param) {
+    	JSONObject rjo = new JSONObject();
+    	JSONObject gjo = QSToJSON.toJSON(param);
+    	if(!gjo.containsKey("pid")) {
+    		rjo.put("code","600041");
+    		rjo.put("msg","缺少字段pid");
+    		return JSONObject.toJSONString(rjo).toString();
+    	}
+    	String pidStr = gjo.get("pid").toString();
+    	if(pidStr=="") {
+    		rjo.put("code","600042");
+    		rjo.put("msg", "缺少参数pid");
+    		return JSONObject.toJSONString(rjo).toString();
+    	}
+    	int pid = Integer.parseInt(pidStr);
+    	Product result = productService.get(pid);
+    	List<ProductImage> productSingleImages = productImageService.list(pid, ProductImageService.type_single);
+    	List<ProductImage> productDetailImages = productImageService.list(pid, ProductImageService.type_detail);
+    	result.setProductSingleImages(productSingleImages);
+    	result.setProductDetailImages(productDetailImages);
+    	productService.setSaleAndReviewNumber(result);
+    	List<PropertyValue> pvs = propertyValueService.list(pid);
+    	
+    	JSONObject djo = new JSONObject();
+    	djo.put("propertys", pvs);
+    	djo.put("data", result);
+    	rjo.put("code", "000000");
+    	rjo.put("data",djo);
+    	return JSONObject.toJSONString(rjo).toString();
+    }
+	
+	@ResponseBody
+	@RequestMapping(value="/getReviews",method=RequestMethod.POST, produces= {"application/json;charset=UTF-8"})
+	public String getReviews(@RequestBody String param) {
+    	JSONObject rjo = new JSONObject();
+    	JSONObject gjo = QSToJSON.toJSON(param);
+    	if(!gjo.containsKey("pid")) {
+    		rjo.put("code", "600051");
+    		rjo.put("msg", "缺少字段pid");
+    	}else {
+    		String pidStr = gjo.get("pid").toString();
+    		if(pidStr=="") {
+        		rjo.put("code", "600052");
+        		rjo.put("msg", "缺少参数pid");
+    		}else {
+    			int pid = Integer.parseInt(pidStr);
+    			Page page = new Page();
+        		int pageSize = 10;
+        		if(!gjo.containsKey("page")) {
+        			page.setStart(0);
+        		}else {
+        			int requestPageStart = Integer.valueOf(gjo.get("page").toString());
+        			int pageStart = requestPageStart>0?requestPageStart-1:0;
+        			page.setStart(pageStart*pageSize);
+        		}
+        		PageHelper.offsetPage(page.getStart(), pageSize);
+        		
+    			List<Review> reviews = reviewService.list(pid);
+    			reviews.forEach(item->{
+    				String name = item.getUser().getName();
+    				String firstStr = name.substring(0, 1);
+    				String endStr = name.substring(name.length()-2, name.length()-1);
+    				item.getUser().setName(firstStr + "***" + endStr);
+    			});
+        		int total = (int) new PageInfo<>(reviews).getTotal();
+        		int pageNum = (int) new PageInfo<>(reviews).getPageNum();
+        		int pages = (int) new PageInfo<>(reviews).getPages();
+        		int size = (int) new PageInfo<>(reviews).getPageSize();
+    			rjo.put("code", "000000");
+    			rjo.put("data", reviews);
+            	rjo.put("total", total);
+            	rjo.put("pageNum", pageNum);
+            	rjo.put("pages", pages);
+            	rjo.put("size",size);
+    		}
+    	}
+    	
+		return JSONObject.toJSONString(rjo).toString();
+	}
 }

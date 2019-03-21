@@ -4,7 +4,7 @@
       <div v-for="r in categoryDatas" :key="r.name" class="category-row">
         <div class="category-title"><h2>{{r.name}}</h2></div>
         <ul class="category-board">
-          <li v-for="(item, index) in r.products" v-if="index<5" :key="item.name" class="product-item">
+          <li v-for="(item, index) in r.products" v-if="index<5" :key="item.name" class="product-item" @click="toProductPage(item.id)">
             <hproduct-card :item="item"></hproduct-card>
           </li>
         </ul>
@@ -37,6 +37,11 @@ export default {
         this.categoryDatas = data.data
       }
     })
+  },
+  methods: {
+    toProductPage (pid) {
+      this.$router.push({path: '/extra/product', query: {pid: pid}})
+    }
   }
 }
 </script>

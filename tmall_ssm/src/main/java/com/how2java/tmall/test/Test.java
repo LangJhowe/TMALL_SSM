@@ -24,7 +24,7 @@ public class Test {
 		System.out.println("=========================");
 		System.out.println("sl.length=" + sl.size());
 		System.out.println("sl2.length=" + sl2.size());
-		System.out.println(Float.parseFloat("a1"));
+		System.out.println(0%5);
 	}
 	public static void change(int i) {
 		i = 2;

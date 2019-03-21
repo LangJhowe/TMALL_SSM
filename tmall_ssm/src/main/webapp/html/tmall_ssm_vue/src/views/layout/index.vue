@@ -2,24 +2,29 @@
   <div>
     <nav-topbar></nav-topbar>
     <f-head></f-head>
-    <f-main></f-main>
+    <main class="f_main">
+      <keep-alive>
+        <router-view></router-view>
+      </keep-alive>
+    </main>
     <f-footer></f-footer>
   </div>
 
 </template>
 
 <script>
-import {NavTopbar, FHead, FMain, FFooter} from './components'
+import {NavTopbar, FHead, FFooter} from './components'
 export default{
   components: {
     NavTopbar,
     FHead,
-    FMain,
     FFooter
   }
 }
 </script>
 
 <style lang="scss">
-
+.f-main{
+  margin-bottom: 0.1rem;
+}
 </style>

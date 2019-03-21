@@ -41,3 +41,21 @@ export function searchByCategory (form) {
     data: Qs.stringify(form)
   })
 }
+
+// getProduct
+export function getProduct (pid) {
+  return request({
+    url: '/getProduct',
+    method: 'post',
+    data: Qs.stringify({pid})
+  })
+}
+
+// getReview
+export function getReviews (pid) {
+  return request({
+    url: '/getReviews',
+    method: 'post',
+    data: Qs.stringify({pid})
+  })
+}
