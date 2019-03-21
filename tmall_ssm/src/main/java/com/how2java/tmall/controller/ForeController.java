@@ -1,9 +1,12 @@
 package com.how2java.tmall.controller;
 
+import com.alibaba.druid.support.monitor.annotation.MField;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.github.pagehelper.page.PageMethod;
 import com.how2java.tmall.mapper.CategoryMapper;
+import com.how2java.tmall.mapper.ProductMapper;
 import com.how2java.tmall.pojo.Category;
 import com.how2java.tmall.pojo.CategoryExample;
 import com.how2java.tmall.pojo.ProductExample;
@@ -24,11 +27,14 @@ import org.springframework.web.util.HtmlUtils;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.how2java.tmall.util.MyPage;
 import com.how2java.tmall.util.Page;
 import com.how2java.tmall.util.QSToJSON;
 
@@ -44,6 +50,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 @Controller
 @RequestMapping("")
 public class ForeController {
@@ -53,6 +60,8 @@ public class ForeController {
     CategoryMapper categoryMapper;
     @Autowired
     ProductService productService;
+    @Autowired
+    ProductMapper productMapper;
     @Autowired
     UserService userService;
     @Autowired
@@ -218,7 +227,7 @@ public class ForeController {
             	rjo.put("msg","缺少参数keyword");		
     		}else {
         		Page page = new Page();
-        		int pageSize = 8;
+        		int pageSize = 16;
         		if(!kjo.containsKey("page")) {
         			page.setStart(0);
         		}else {
@@ -226,21 +235,23 @@ public class ForeController {
         			int pageStart = requestPageStart>0?requestPageStart-1:0;
         			page.setStart(pageStart*pageSize);
         		}
-        		
         		PageHelper.offsetPage(page.getStart(), pageSize);
+        		
         		String keyword = URLDecoder.decode(kjo.get("keyword").toString(), "UTF-8");
         		List<Product> ps = productService.search(keyword);
-        		
+        		System.out.println("ps size 1= " + ps.size());
         		int total = (int) new PageInfo<>(ps).getTotal();
         		int pageNum = (int) new PageInfo<>(ps).getPageNum();
         		int pages = (int) new PageInfo<>(ps).getPages();
-        		
+        		int size = (int) new PageInfo<>(ps).getPageSize();
+        		System.out.println("ps size 2= " + ps.size());
         		productService.setSaleAndReviewNumber(ps);
             	rjo.put("code", "000000");
             	rjo.put("data",ps);
             	rjo.put("total", total);
             	rjo.put("pageNum", pageNum);
             	rjo.put("pages", pages);
+            	rjo.put("size",size);
     		}
 
     	}
@@ -262,6 +273,13 @@ public class ForeController {
     			rjo.put("code", "600032");
     			rjo.put("msg","缺少参数cid");
     		}else {
+        		int cid= Integer.parseInt(sCid);
+    			Category c = categoryService.get(cid); 
+    			if(null == c) c = categoryService.get(cid);
+    			productService.fill(c);
+    			List<Product> ps = c.getProducts();
+    			productService.setFirstProductImage(ps);
+    			productService.setSaleAndReviewNumber(ps);
     			String sort;
     			if(!gjo.containsKey("sort")) {
     				sort = "all";
@@ -269,14 +287,7 @@ public class ForeController {
     				sort= gjo.get("sort").toString()==""?"all":gjo.get("sort").toString();
     				
     			}
-    			int cid= Integer.parseInt(sCid);
-    			Category c = categoryMapper.selectByPrimaryKey(cid);
-    			if(c==null) System.out.println("cid=" + cid + "null");
-    			productService.fill(c);
-    			List<Product> ps = c.getProducts();
-    			productService.setSaleAndReviewNumber(ps);
-    			
-    			
+    			//排序
     			if(null!=sort) {
     				switch(sort) {
     					case "review":
@@ -297,27 +308,125 @@ public class ForeController {
     				}
     			}
     			
-        		Page page = new Page();
-        		int pageSize = 16;
-        		
-        		if(!gjo.containsKey("page")) {
-        			page.setStart(0);
-        		}else {
-        			int requestPageStart = Integer.valueOf(gjo.get("page").toString());
-        			int pageStart = requestPageStart>0?requestPageStart-1:0;
-        			page.setStart(pageStart*pageSize);
-        		}
+    			// 价格过滤
+        		List<Product> rps = ps;
+        		if(gjo.containsKey("max")&&gjo.containsKey("min")) {
+        			String maxStr = gjo.get("max").toString();
+        			String minStr = gjo.get("min").toString();
+        			float maxF,minF;
+        			if(maxStr!=""&&minStr!="") {
+        				try {
+        					maxF= Float.parseFloat(maxStr);
+						} catch (NumberFormatException e) {
+							rjo.put("code", "600033");
+							rjo.put("msg", "最大价格限制请输入数字");
+							return JSONObject.toJSONString(rjo).toString();
+						}
+            			
+        				try {
+        					minF= Float.parseFloat(minStr);
+						} catch (NumberFormatException e) {
+							rjo.put("code", "600034");
+							rjo.put("msg", "最小价格限制请输入数字");
+							return JSONObject.toJSONString(rjo).toString();
+						}
+						if(maxF<minF) {
+        					Float temp = maxF;
+        					maxF = minF;
+        					minF = temp;
+        				}
+						final float ffmax = maxF;
+						final float ffmin = minF;
+						List<Product> psMaxFilter = ps.stream().filter(new Predicate<Product>() {
+							@Override
+							public boolean test(Product t) {
+								return t.getPromotePrice()<=ffmax;
+							}
+						}).collect(Collectors.toList());
+						rps = psMaxFilter.stream().filter(new Predicate<Product>() {
 
-        		PageHelper.offsetPage(page.getStart(), pageSize);
-        		int total = (int) new PageInfo<>(ps).getTotal();
-        		int PageNum = (int) new PageInfo<>(ps).getPageNum();
-        		int pages = (int) new PageInfo<>(ps).getPages();
+							@Override
+							public boolean test(Product t) {
+								return  t.getPromotePrice()>=ffmin;
+							}
+						}).collect(Collectors.toList());
+        			}else if(maxStr!="") {
+        				maxF= Float.parseFloat(maxStr);
+        				final float ffmax = maxF;
+						rps = ps.stream().filter(new Predicate<Product>() {
+
+							@Override
+							public boolean test(Product t) {
+								return  t.getPromotePrice()<=ffmax;
+							}
+						}).collect(Collectors.toList());
+        			}else if(minStr!="") {
+        				minF= Float.parseFloat(minStr);
+        				final float ffmin = minF;
+						rps = ps.stream().filter(new Predicate<Product>() {
+
+							@Override
+							public boolean test(Product t) {
+								return  t.getPromotePrice()>=ffmin;
+							}
+						}).collect(Collectors.toList());
+        			}
+        		}else if(gjo.containsKey("max")&&gjo.get("max")!="") {
+        			String maxStr = gjo.get("max").toString();
+    				float maxF;
+    				try {
+    					maxF= Float.parseFloat(maxStr);
+					} catch (NumberFormatException e) {
+						rjo.put("code", "600033");
+						rjo.put("msg", "最大价格限制请输入数字");
+						return JSONObject.toJSONString(rjo).toString();
+					}
+					rps = ps.stream().filter(new Predicate<Product>() {
+
+						@Override
+						public boolean test(Product t) {
+							return  t.getPromotePrice()<=maxF;
+						}
+					}).collect(Collectors.toList());
+        		}else if(gjo.containsKey("min")&&gjo.get("min")!="") {
+        			String minStr = gjo.get("min").toString();
+    				float minF;
+    				try {
+    					minF= Float.parseFloat(minStr);
+					} catch (NumberFormatException e) {
+						rjo.put("code", "600033");
+						rjo.put("msg", "最大价格限制请输入数字");
+						return JSONObject.toJSONString(rjo).toString();
+					}
+					rps = ps.stream().filter(new Predicate<Product>() {
+
+						@Override
+						public boolean test(Product t) {
+							return  t.getPromotePrice()>=minF;
+						}
+					}).collect(Collectors.toList());
+        		}
+    			
+    			
+    			int size = 8;
+    			long total = rps.size();
+    			MyPage page = new MyPage(0,size,total);
+    			
+    			page.setCurrent(1);
+    			if(gjo.containsKey("page")) {
+    				int pageNum = Integer.valueOf(gjo.get("page").toString()).intValue();
+    				page.setCurrent(pageNum);
+    			}
+        		List<Product> result = rps.subList(page.getStart(), page.getEnd());
         		
+        		
+
     			rjo.put("code", "000000");
-    			rjo.put("data",ps);
-    			rjo.put("total",total);
-    			rjo.put("PageNum",PageNum);
-    			rjo.put("pages",pages);
+    			rjo.put("data",result);
+    			rjo.put("total",page.getTotal());
+    			rjo.put("PageNum",page.getCurrent());
+    			rjo.put("pages",page.getTotalPage());
+    			rjo.put("size",page.getCount());
     		}
     	}
     	return JSONObject.toJSONString(rjo).toString();

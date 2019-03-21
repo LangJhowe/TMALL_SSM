@@ -28,15 +28,17 @@
           <input
             class="fl"
             type="number"
-            v-model="priceSelected.min"
+            v-model.lazy="priceSelected.min"
             placeholder="请输入"
+            @change="fillPrice"
           >
           <span class="splash fl">-</span>
           <input
             class="fl"
             type="number"
             placeholder="请输入"
-            v-model="priceSelected.max"
+            v-model.lazy="priceSelected.max"
+            @change="fillPrice"
           >
         </div>
       </div>
@@ -112,14 +114,9 @@ export default {
         this.selectedSort = sort.sort
       }
       this.$emit('chooseSort', sort.sort)
-    }
-  },
-  watch: {
-    priceSelected: {
-      handler () {
-        console.log('changeprice')
-      },
-      deep: true
+    },
+    fillPrice () {
+      this.$emit('fillPrice', this.priceSelected)
     }
   }
 }

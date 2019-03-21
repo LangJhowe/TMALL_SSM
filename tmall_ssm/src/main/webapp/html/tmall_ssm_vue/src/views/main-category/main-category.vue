@@ -6,15 +6,16 @@
         :needSort="true"
         :isCategory="true"
         :cid="cid"
-        @chooseSort="handleChooseSort">
+        @chooseSort="handleChooseSort"
+        @fillPrice="handleFillPrice">
         </sproduct-wall>
       <div class="pagination">
         <el-pagination
           layout="total,prev,pager,next"
           :total="pager.total"
           :current-page="pager.pageNum"
-          :page-count="pager.pages"
           @current-change="changePage"
+          :page-size="pager.size"
         ></el-pagination>
       </div>
     </div>
@@ -35,7 +36,8 @@ export default {
       pager: {
         pages: 1,
         page: 1,
-        total: 0
+        total: 0,
+        size: 10
       },
       searchForm: {
         cid: '',
@@ -67,11 +69,17 @@ export default {
           this.pager.pages = data.pages
           this.pager.page = data.pageNum
           this.pager.total = data.total
+          this.pager.size = data.size
         }
       })
     },
     handleChooseSort (sort) {
       this.searchForm.sort = sort
+      this.flashProductData()
+    },
+    handleFillPrice (prices) {
+      this.searchForm.min = prices.min
+      this.searchForm.max = prices.max
       this.flashProductData()
     },
     changePage (page) {

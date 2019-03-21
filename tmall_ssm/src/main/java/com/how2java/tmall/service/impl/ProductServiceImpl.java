@@ -102,8 +102,7 @@ public class ProductServiceImpl implements ProductService{
 
 	@Override
 	public void fill(Category c) {
-		if(c==null) System.out.println("psfillc=" + null);
-		List<Product> ps = list(c.getId().intValue());
+		List<Product> ps = list(c.getId());
 		c.setProducts(ps);
 	}
 
