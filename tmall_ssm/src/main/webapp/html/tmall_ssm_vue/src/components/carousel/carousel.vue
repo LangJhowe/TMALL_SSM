@@ -13,14 +13,14 @@
               v-for="item in category"
               :key="item.name"
               @mouseenter="showProduct(item.id)"
-            ><a href=""><i class="glyphicon glyphicon-link"></i>{{item.name}}</a></li>
+            ><router-link :to="{path: '/category',query:{cid:item.id}}"><i class="glyphicon glyphicon-link"></i>{{item.name}}</router-link></li>
           </ul>
         </div>
         <div v-show="open" class="category-panel">
           <div class="keywords-nav">
             <ul v-for="(row,rIndex) in categoryData" :key="rIndex" class="row" >
               <li class="col" v-for="(col,cIndex) in row" :key="cIndex">
-                  <a :class="{hightlight:Math.random()<0.2}" href="javascript:void(0)" @click="toProductPage(col.pid)">{{col.title}}</a>
+                  <router-link :class="{hightlight:Math.random()<0.2}" :to="{path: '/extra/product', query: {pid: col.pid}}">{{col.title}}</router-link>
               </li>
             </ul>
           </div>
@@ -78,17 +78,8 @@ export default {
               }
             }
           }
-          console.log(this.categoryData)
         }
       })
-    },
-    toProductPage (pid) {
-
-    }
-  },
-  watch: {
-    categoryData (oldv, newv) {
-      // console.log('ssss')
     }
   }
 }

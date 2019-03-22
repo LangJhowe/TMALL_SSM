@@ -37,7 +37,6 @@ export default {
     },
     search () {
       var keyword = this.keyword
-      console.log('to search')
       this.$router.push({path: '/search', query: {keyword: keyword}})
     }
   }

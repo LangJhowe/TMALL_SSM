@@ -78,7 +78,9 @@ export default {
             type: 'success',
             message: `登陆成功！欢迎回来,${data.data.name}!`
           })
-          this.$router.push('/')
+          this.$emit('loginSuccess', data.data)
+        } else {
+          alert(data.msg)
         }
       })
     },

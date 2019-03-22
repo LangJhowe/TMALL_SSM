@@ -19,3 +19,22 @@ input::-webkit-inner-spin-button {
 input[type="number"] {
     -moz-appearance: textfield;
 }
+
+button{
+  outline:none;
+  border:none;
+  &:active{
+    opacity: 0.8;
+  }
+}
+.pink-btn{
+  color: #c40000;
+  background: #ffeded;
+  border: 1px solid #c40000;
+}
+
+.red-btn{
+  color: #fff;
+  background: #c40000;
+  border: 1px solid transparent;
+}

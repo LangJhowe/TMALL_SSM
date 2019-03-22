@@ -87,6 +87,7 @@ public class OrderItemServiceImpl implements OrderItemService{
 
     private void setProduct(OrderItem oi) {
         Product p = productService.get(oi.getPid());
+        productService.setFirstProductImage(p);
         oi.setProduct(p);
     }
 

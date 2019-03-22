@@ -18,7 +18,6 @@ export function formatPrice (number, decimals, descPoint, thousandsSep) {
   }
   s = (prec ? toFixedFix(n, prec) : '' + Math.floor(n)).split('.')
   var re = /(-?\d+)(\d{3})/
-  console.log(s)
   while (re.test(s[0])) {
     s[0] = s[0].replace(re, '$1' + sep + '$2')
   }

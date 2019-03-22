@@ -7,12 +7,12 @@
         </ul>
         <ul class="right-menu">
           <li
-            v-for="CNItem in crossNavItem"
+            v-for="CNItem in originNavItems"
             :key="CNItem.name"
           >
             <a
               v-if="CNItem.hasOwnProperty('img')"
-              href="#"
+              :href="CNItem.url"
             ><img
                 :src="CNItem.img"
                 alt=""
@@ -22,6 +22,7 @@
               v-else
             >{{CNItem.name}}</a>
           </li>
+          <li v-for="subItem in subNavItems" :key="subItem.id"><router-link :to="{path:subItem.url,query:{cid:subItem.id}}" >{{subItem.name}}</router-link></li>
         </ul>
       </div>
 
@@ -41,19 +42,20 @@ export default {
   data () {
     return {
       originNavItems: [
-        { name: '天猫超市', img: 'static/img/chaoshi.png', url: '' },
-        { name: '天猫国际', img: 'static/img/guoji.png', url: '' }
+        { name: '天猫超市', img: 'static/img/chaoshi.png', url: 'javascript:void(0)' },
+        { name: '天猫国际', img: 'static/img/guoji.png', url: 'javascript:void(0)' }
       ]
     }
   },
   methods: {},
   computed: {
-    crossNavItem () {
+    subNavItems () {
       var subItems = this.category.slice(0, 4)
-      var extraItems = subItems.map(item => {
-        return { name: item.name, url: '' }
+      var subNav = subItems.map(item => {
+        return { name: item.name, id: `${item.id}`, url: '/category' }
       })
-      return this.originNavItems.concat(extraItems)
+      console.log(subNav)
+      return subNav
     },
     ...mapGetters(['category'])
   }

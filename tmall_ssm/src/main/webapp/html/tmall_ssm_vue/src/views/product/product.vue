@@ -3,6 +3,7 @@
     <div class="m_container">
       <div class="category-img">
         <img
+          v-if="productData.cid&&productData.cid!=0"
           :src="`http://localhost:8080/tmall_ssm/img/category/${productData.cid}.jpg`"
           alt=""
         >
@@ -11,6 +12,7 @@
         <div class="imgs-info">
           <div class=p-imgs>
             <img
+              v-if="choosenImgId&&choosenImgId!=0"
               class="bigImg"
               :src="`http://localhost:8080/tmall_ssm/img/productSingle/${choosenImgId}.jpg`"
               alt=""
@@ -19,6 +21,7 @@
               <li
                 v-for="img in productData.productSingleImages"
                 :key="img.id"
+                @click="selectBigImg(img.id)"
               >
                 <img
                   :src="`http://localhost:8080/tmall_ssm/img/productSingle_small/${img.id}.jpg`"
@@ -53,7 +56,7 @@
             <div class="numbers">
               <span>数量</span>
               <el-input-number
-                v-model="buyNums"
+                v-model="buyForm.num"
                 controls-position="right"
                 @change="handleChange"
                 :min="1"
@@ -120,6 +123,11 @@
         </el-tabs>
       </div>
     </div>
+    <el-dialog
+      :visible="loginBoxOpen"
+      @close="loginBoxOpen=false">
+      <login-box @loginSuccess="handleLoginSuccess"></login-box>
+    </el-dialog>
   </div>
 </template>
 
@@ -127,6 +135,7 @@
 import { NavTopbar } from '@/views/layout/components'
 import LoginBox from '@/components/login-box/login-box'
 import { getProduct, getReviews } from '@/api/home'
+import { buyOneProduct } from '@/api/user'
 import CODES from '@/api/config'
 import { getUser } from '@/util/auth'
 import { formatPrice, formatDate } from '@/util/index'
@@ -142,12 +151,21 @@ export default {
       productPropertys: [],
       productReviews: [],
       choosenImgId: '0',
-      buyNums: 0,
-      isLogin: false,
-      currentTab: 'productDeatil'
+      currentTab: 'productDeatil',
+      loginBoxOpen: false,
+
+      buyForm: {
+        uid: getUser() ? getUser().id : '',
+        pid: '',
+        num: 1
+      }
     }
   },
   computed: {
+    isLogin () {
+      if (getUser()) return true
+      return false
+    },
     fPromotePrice () {
       return formatPrice(this.productData.promotePrice, 2) || '0.00'
     },
@@ -157,6 +175,7 @@ export default {
   },
   mounted () {
     this.pid = this.$route.query.pid
+    this.buyForm.pid = this.$route.query.pid
     this.getProductData()
     this.getProductReview()
   },
@@ -181,18 +200,46 @@ export default {
     },
     handleChange () {},
     buyNow () {
-      if (getUser == '') {
+      if (!this.needOpenLoginBox()) {
+        buyOneProduct(this.buyForm).then(res => {
+          const {data} = res
+          if (data.code == CODES.SUCCESS) {
+            this.$router.push({path: '/buyStep/step1', query: {oiid: data.oiid}})
+          }
+        })
       }
     },
-    addCart () {},
+    addCart () {
+      if (!this.needOpenLoginBox()) {
+
+      }
+    },
     formatDate (date) {
       return formatDate(date)
+    },
+    selectBigImg (id) {
+      this.choosenImgId = id
+    },
+    needOpenLoginBox () {
+      if (getUser() == null) {
+        this.loginBoxOpen = true
+        return true
+      }
+      return false
+    },
+    handleLoginSuccess (data) {
+      this.loginBoxOpen = false
+      this.buyNow()
     }
   },
   watch: {
-    $router (to, from) {
+    $route (to, from) {
+      if (!to.query.hasOwnProperty()) return
       if (this.pid == from.query.pid) return
       this.pid = this.$route.query.pid
+      this.buyForm.pid = this.$route.query.pid
+      this.getProductData()
+      this.getProductReview()
     }
   }
 }
@@ -216,6 +263,7 @@ export default {
     color: #999;
     .imgs-info {
       display: flex;
+      margin-bottom: 0.3rem;
       .p-imgs {
         .bigImg {
           display: block;
@@ -427,6 +475,10 @@ export default {
         }
       }
     }
+  }
+  .el-dialog{
+    width:min-content;
+    .login-box{margin-right:0;}
   }
 }
 </style>

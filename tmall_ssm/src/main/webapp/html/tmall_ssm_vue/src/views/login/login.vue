@@ -10,28 +10,7 @@
     <div class="f_main">
       <div class="m_container">
         <img class="bgImg" src="/static/img/loginBackground.png" alt="">
-        <login-box></login-box>
-        <!-- <div class="login-box">
-          <form class="login-form" action="/login" @submit.prevent="onSubmit">
-            <h2>账户登录</h2>
-            <div class="login-inputs">
-              <div class="row">
-                <span class="name-icon"><i class="glyphicon glyphicon-user"></i></span>
-                <input type="text" v-model="loginForm.name" placeholder="手机/会员名/邮箱"/>
-              </div>
-              <div class="row">
-                <span class="password-icon"><i class="glyphicon glyphicon-lock"></i></span>
-                <input type="password" v-model="loginForm.password" placeholder="密码" autocomplete="off">
-              </div>
-            </div>
-            <p style="color:#a94442;margin:0;">非官网请勿输入真实账号密码</p>
-            <div class="other clearfix">
-              <router-link class="fl" to="/login" @click.native="goto()">忘记登录密码 </router-link>
-              <router-link class="fr" to="/extra/registry">免费注册</router-link>
-            </div>
-            <button class="login-btn" @click="doLogin()">登录</button>
-          </form>
-        </div> -->
+        <login-box @loginSuccess="handleLoginSuccess"></login-box>
       </div>
     </div>
     <f-footer></f-footer>
@@ -45,6 +24,11 @@ export default {
   components: {
     FFooter,
     LoginBox
+  },
+  methods: {
+    handleLoginSuccess () {
+      this.$router.push('/')
+    }
   }
 }
 </script>
