@@ -1,4 +1,8 @@
+@import "./variable.scss";
+@import "./reset.scss";
 @import "./base.scss";
+
+
 html,body{min-width: 12.6rem;}
 *[class^="f_"] {
   .m_container{
@@ -28,13 +32,29 @@ button{
   }
 }
 .pink-btn{
-  color: #c40000;
+  color: $themeColor;
   background: #ffeded;
-  border: 1px solid #c40000;
+  border: 1px solid $themeColor;
 }
 
 .red-btn{
   color: #fff;
-  background: #c40000;
+  background: $themeColor;
   border: 1px solid transparent;
+}
+
+.tl{
+  text-align: left!important;
+}
+
+.orderItemWangWangGif{
+  display: block;
+  width: 67px;
+  height: 23px;
+  background-image: url('../../../static/img/wangwang.gif');
+  background-repeat: no-repeat;
+  background-color: transparent;
+  background-attachment: scroll;
+  background-position: -0px -0px;
+  position: relative;
 }

@@ -15,6 +15,7 @@ public interface OrderItemService {
 	void delete(int id);
 	void update(OrderItem o);
 	OrderItem get(int id);
+
 	List<OrderItem> list();
 	
 	void fill(List<Order> os);
@@ -24,4 +25,5 @@ public interface OrderItemService {
 	int getSaleCount(int pid);
 	
 	List<OrderItem> listByUser(int uid);
+	List<OrderItem> listByOid(int oid);
 }

@@ -79,7 +79,7 @@
         </el-table>
         <div class="more">
           <div class="leaveMsg">
-            <span>给店家留言:</span><textarea v-model="orderForm.userMesssage" name="leaveMsg" id="" placeholder="字数没做限制"></textarea>
+            <span>给店家留言:</span><textarea v-model="orderForm.userMessage" name="leaveMsg" id="" placeholder="字数没做限制"></textarea>
           </div>
           <div class="sum">
             <p>店铺合计(含运费): <span>￥{{formatPrice(sum)}}</span></p>
@@ -111,7 +111,7 @@ export default {
         post: '',
         receiver: '',
         mobile: '',
-        userMesssage: ''
+        userMessage: ''
       },
       rules: {
         address: [{ required: true, message: '请输入详细地址', trigger: 'blur' }],

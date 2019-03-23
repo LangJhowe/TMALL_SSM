@@ -75,4 +75,17 @@ public class MyJSONUtil {
 		String dParam = URLDecoder.decode(qsStr);
 		return QSToJSON.toJSON(dParam);
 	}
+	
+	public static String returnErrorRespones(String code,String msg) {
+		JSONObject jo = new JSONObject();
+		jo.put("code",code);
+		jo.put("msg",msg);
+		return jo.toJSONString().toString();
+	}
+	public static String returnErrorRespones(int code,String msg) {
+		JSONObject jo = new JSONObject();
+		jo.put("code","" + code);
+		jo.put("msg",msg);
+		return jo.toJSONString().toString();
+	}
 }

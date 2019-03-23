@@ -4,7 +4,7 @@
     <div class="f_head">
       <div class="m_container">
         <img class="logo" src="/static/img/simpleLogo.png" alt="">
-        <img v-show="needFlow&&!needSearch" class="step-img" src="/static/img/buyflow.png" alt="">
+        <img v-show="needFlow" class="step-img" src="/static/img/buyflow.png" alt="">
         <search v-show="needSearch"></search>
       </div>
     </div>
@@ -29,32 +29,29 @@ export default {
   },
   data () {
     return {
-      needFlow: true,
-      needSearch: true
     }
   },
-  mounted () {
-    this.autoShowFlow()
-  },
-  methods: {
-    autoShowFlow () {
-      if (this.$route.path == '/buyStep/stepPay') {
-        this.needFlow = false
-      } else {
-        this.needFlow = true
+  computed: {
+    needSearch () {
+      var path = this.$route.path
+      switch (path) {
+        case '/buyStep/stepPayed': return true
+        case '/buyStep/bought': return true
+        default:return false
       }
-      if (this.$route.path == '/buyStep/stepPayed') {
-        this.needSearch = true
-      } else {
-        this.needSearch = false
+    },
+    needFlow () {
+      var path = this.$route.path
+      switch (path) {
+        case '/buyStep/stepPay': return true
+        case '/buyStep/step1': return true
+        default:return false
       }
     }
   },
-  watch: {
-    '$route' (to, from) {
-      this.autoShowFlow()
-    }
-  }
+  mounted () {},
+  methods: {},
+  watch: {}
 }
 </script>
 

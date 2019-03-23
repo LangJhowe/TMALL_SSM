@@ -7,11 +7,11 @@
       <div class="order-info">
         <ul>
           <li class="address">收货地址: <strong>{{order.address}}</strong></li>
-          <li class="total">实付款:<strong> ￥{{total}}</strong></li>
+          <li class="total">实付款:<strong> ￥{{formatPrice(order.total)}}</strong></li>
           <li class="arrivalDate">预计08月08日送达</li>
         </ul>
         <div class="other-link">
-          <span>您也可以</span> <router-link to="/">查看已买到的宝贝</router-link> <router-link to="/">查看交易详情</router-link>
+          <span>您也可以</span> <router-link :to="{path:'/buyStep/bought',}">查看已买到的宝贝</router-link> <router-link to="/buyStep/bought">查看交易详情</router-link>
         </div>
       </div>
       <div class="safe-tips">
@@ -29,16 +29,14 @@ export default {
   data () {
     return {
       order: {
-        address: ''
+        address: '',
+        total: 0
       }
     }
   },
   computed: {
     oid () {
       return this.$route.query.orderId
-    },
-    total () {
-      return this.$route.query.total
     }
   },
   mounted () {
@@ -53,6 +51,7 @@ export default {
         const {data} = res
         if (CODES.SUCCESS == data.code) {
           this.order.address = data.data.address
+          this.order.total = data.data.total
         }
       })
     }

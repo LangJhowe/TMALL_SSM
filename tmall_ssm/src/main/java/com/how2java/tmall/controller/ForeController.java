@@ -1,26 +1,18 @@
 package com.how2java.tmall.controller;
 
-import com.alibaba.druid.support.monitor.annotation.MField;
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.github.pagehelper.page.PageMethod;
 import com.how2java.tmall.mapper.CategoryMapper;
 import com.how2java.tmall.mapper.OrderItemMapper;
-import com.how2java.tmall.mapper.OrderMapper;
 import com.how2java.tmall.mapper.ProductMapper;
 import com.how2java.tmall.pojo.Category;
-import com.how2java.tmall.pojo.CategoryExample;
-import com.how2java.tmall.pojo.ProductExample;
 import com.how2java.tmall.pojo.ProductImage;
 import com.how2java.tmall.pojo.PropertyValue;
 import com.how2java.tmall.pojo.Review;
 import com.how2java.tmall.pojo.User;
-import com.how2java.tmall.pojo.CategoryExample.Criteria;
 import com.how2java.tmall.pojo.Order;
-import com.how2java.tmall.pojo.OrderExample;
 import com.how2java.tmall.pojo.OrderItem;
 import com.how2java.tmall.pojo.OrderItemExample;
 import com.how2java.tmall.pojo.Product;
@@ -34,18 +26,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.util.HtmlUtils;
 
 import java.util.List;
-import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import com.how2java.tmall.util.MyJSONUtil;
 import com.how2java.tmall.util.MyPage;
@@ -58,14 +43,11 @@ import comparator.ProductPriceComparator;
 import comparator.ProductReviewComparator;
 import comparator.ProductSaleCountComparator;
 
-import static org.hamcrest.CoreMatchers.nullValue;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 @Controller
 @RequestMapping("")
@@ -563,7 +545,6 @@ public class ForeController {
 		int pid = Integer.parseInt(gjo.get("pid").toString());
 		int num = Integer.parseInt(gjo.get("num").toString());
 		
-		Product p = productService.get(pid);
 		int oiid = 0;
 		
 		boolean found = false;
@@ -592,22 +573,7 @@ public class ForeController {
 	}
 
 	
-	//7提交订单
-	@ResponseBody
-	@RequestMapping(value="/applyOrder",method=RequestMethod.POST,produces= {"appllication/json;charset=UTF-8"})
-	public String applyOrder(@RequestBody String param) {
-		JSONObject gjo = QSToJSON.toJSON(param);
-		MyJSONUtil.setJo(gjo);
-		
-		if(!MyJSONUtil.isContainKey("oiid")) return MyJSONUtil.getErrorResponse(600070);
-		if(!MyJSONUtil.keyHasValue("oiid")) return MyJSONUtil.getErrorResponse(600071);
-		
-		JSONObject rjo = new JSONObject();
-		List<OrderItem> ois = new ArrayList<OrderItem>();
-		float total = 0;
-
-		return "ok";
-	}
+	//7
 	
 	//8获取orderItem
 	@ResponseBody
@@ -662,11 +628,13 @@ public class ForeController {
 		if(!MyJSONUtil.keyHasValue("uid")) return MyJSONUtil.getErrorResponse("600100");
 		if(!MyJSONUtil.isContainKey("orderList")) return MyJSONUtil.getErrorResponse("600101");
 		if(!MyJSONUtil.keyHasValue("orderList")) return MyJSONUtil.getErrorResponse("600102");
+		
 		String address = data.get("address").toString();
 		String post = data.get("post").toString();
 		String receiver = data.get("receiver").toString();
 		String mobile = data.get("mobile").toString();
 		String uid = data.get("uid").toString();
+		String userMessage = data.get("uid").toString();
 		String orderCode = new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date())+ RandomUtils.nextInt(10000);
 		Order order = new Order();
 		order.setOrderCode(orderCode);
@@ -675,6 +643,8 @@ public class ForeController {
 		order.setReceiver(receiver);
 		order.setMobile(mobile);
 		order.setUid(Integer.parseInt(uid));
+		order.setCreateDate(new Date());
+		if(MyJSONUtil.isContainKey("userMessage")&&MyJSONUtil.keyHasValue("userMessage")) order.setUserMessage(userMessage);
 		order.setStatus(OrderService.waitPay);
 		JSONArray jao = (JSONArray) data.get("orderList");
 		List<OrderItem> ois = new ArrayList<OrderItem>(); 
@@ -726,9 +696,28 @@ public class ForeController {
 		int oid = Integer.parseInt(gjo.get("orderId").toString());
 		System.out.println("oid=" + oid);
 		Order order = orderService.get(oid);
+		orderItemService.fill(order);
 		rjo.put("code","000000");
 		rjo.put("msg","成功获取订单信息");
 		rjo.put("data", order);
 		return rjo.toJSONString().toString();
 	} 
+	
+	///13获取user的的所有order信息
+	@ResponseBody
+	@RequestMapping(value="/getOrders",method=RequestMethod.POST,produces= {"application/json;charset=UTF-8"})
+	public String getOrders(@RequestBody String param) {
+		JSONObject gjo = QSToJSON.toJSON(param);
+		JSONObject rjo = new JSONObject();
+		MyJSONUtil.setJo(gjo);
+		if(!MyJSONUtil.isContainKey("uid")) return MyJSONUtil.getErrorResponse(600121);
+		if(!MyJSONUtil.keyHasValue("uid")) return MyJSONUtil.getErrorResponse(600121);
+		String sortType = "all";
+		int uid = Integer.parseInt(gjo.get("uid").toString());
+		List<Order> os = orderService.list(uid,OrderService.delete);
+		orderItemService.fill(os);
+		rjo.put("code", "000000");
+		rjo.put("data", os);
+		return rjo.toJSONString().toString();
+	}
 }

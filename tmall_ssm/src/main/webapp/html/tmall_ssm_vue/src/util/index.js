@@ -32,8 +32,17 @@ export function formatPrice (number, decimals, descPoint, thousandsSep) {
 export function formatDate (dateStr) {
   var date = new Date(dateStr)
   var year = date.getFullYear()
-  var month = parseFloat(date.getMonth()) < 10 ? '0' + date.getMonth() : date.getMonth()
-  var day = parseFloat(date.getDay()) < 10 ? '0' + date.getDay() : date.getDay()
+  var month = parseFloat(date.getMonth() + 1) < 10 ? '0' + (date.getMonth() + 1) : (date.getMonth() + 1)
+  var day = parseFloat(date.getDate()) < 10 ? '0' + date.getDate() : date.getDate()
   var array = [year, month, day]
   return array.join('-')
+}
+
+export function formatTime (dateStr) {
+  var date = new Date(dateStr)
+  var hour = parseFloat(date.getHours()) < 10 ? '0' + date.getHours() : date.getHours()
+  var min = parseFloat(date.getMinutes()) < 10 ? '0' + date.getMinutes() : date.getMinutes()
+  var seconds = parseFloat(date.getSeconds()) < 10 ? '0' + date.getSeconds() : date.getSeconds()
+  var array = [hour, min, seconds]
+  return array.join(':')
 }

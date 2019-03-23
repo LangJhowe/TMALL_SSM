@@ -37,10 +37,19 @@ export function confirmPay (form) {
   })
 }
 
-// 获取订单
+// 获取单个订单
 export function getPayedOrder (form) {
   return request({
     url: '/getPayedOrder',
+    method: 'post',
+    data: Qs.stringify(form)
+  })
+}
+
+// 获取所有订单
+export function getOrders (form) {
+  return request({
+    url: '/getOrders',
     method: 'post',
     data: Qs.stringify(form)
   })

@@ -1,0 +1,7 @@
+$themeColor : #c40000;
+
+@mixin flexCenter(){
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
