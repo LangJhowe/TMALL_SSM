@@ -67,7 +67,7 @@ export function askDelivery (form) {
 // 确认收货
 export function confirmGot (form) {
   return request({
-    url: '/confirmGot?',
+    url: '/confirmGot',
     method: 'post',
     data: Qs.stringify(form)
   })
@@ -76,7 +76,7 @@ export function confirmGot (form) {
 // 最终确认付款
 export function finalConfirmPay (form) {
   return request({
-    url: '/finalConfirmPay?',
+    url: '/finalConfirmPay',
     method: 'post',
     data: Qs.stringify(form)
   })
@@ -84,8 +84,8 @@ export function finalConfirmPay (form) {
 
 // 评价
 export function review (form) {
-  return review({
-    url: '/review?',
+  return request({
+    url: '/review',
     method: 'post',
     data: Qs.stringify(form)
   })

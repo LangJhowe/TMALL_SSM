@@ -52,10 +52,10 @@ export function getProduct (pid) {
 }
 
 // getReview
-export function getReviews (pid) {
+export function getReviews (form) {
   return request({
     url: '/getReviews',
     method: 'post',
-    data: Qs.stringify({pid})
+    data: Qs.stringify(form)
   })
 }

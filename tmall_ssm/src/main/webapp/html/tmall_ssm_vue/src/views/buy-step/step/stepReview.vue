@@ -27,27 +27,46 @@
             </div>
           </div>
         </div>
-        <div class="review-board">
+        <div v-if="onlyReview" class="all-reviews">
           <div class="brow">
             <div class="top"></div>
             <p>累计评价 <span>{{orderData.orderItems[0].product.reviewCount}}条</span></p>
             <div class="line"></div>
           </div>
-          <ul class="all-review" v-if="showReviews">
-            <li></li>
+          <ul class="review-list" >
+            <li v-for="r in reviewList" :key="r.id">
+              <p>
+                <span class="review-time">{{formatDAT(r.createDate)}}</span>
+                <span class="review-content">{{r.content}}</span>
+                <span class="review-user">{{r.username}} <span class="anonymous">(匿名)</span></span>
+              </p>
+            </li>
           </ul>
-          <div v-else class="main">
-            <p>其他买家,需要哦你的建议哦！</p>
-            <div class="text">
-              <label class="name" for="review">评价商品</label>
-              <div class="value">
-                <textarea v-model="review" name="review" id="review" cols="30" rows="10"></textarea>
+          <div class="pager">
+              <el-pagination
+                layout="prev, pager, next"
+                :total="pager.total"
+                :current-page="pager.page"
+                @current-change="pagerChange">
+              </el-pagination>
+          </div>
+        </div>
+        <div v-else class="review-board">
+          <div class="main">
+            <div class="inner">
+                <p>其他买家,需要哦你的建议哦！</p>
+                <div class="text">
+                <label class="name" for="review">评价商品</label>
+                <div class="value">
+                  <textarea v-model="review" name="review" id="review" cols="30" rows="10"></textarea>
+                </div>
               </div>
             </div>
+            <div class="submit-review">
+              <button @click="submitReview()">提交评价</button>
+            </div>
           </div>
-          <div class="submit-review">
-            <button @click="submitReview()">提交评价</button>
-          </div>
+
         </div>
       </div>
     </div>
@@ -57,38 +76,73 @@
 <script>
 import CODES from '@/api/config'
 import {getPayedOrder, review} from '@/api/user'
-import {formatPrice, formatDateCN} from '@/util'
+import {getReviews} from '@/api/home'
+import {formatPrice, formatDateCN, formatDAT} from '@/util'
 
 export default {
   data () {
     return {
       orderData: {},
       review: '',
-      showReviews: false,
-      reviewList: []
+      reviewList: [],
+
+      pager: {
+        total: 1,
+        page: 1
+      }
     }
   },
   computed: {
     oid () {
       return this.$route.query.oid
+    },
+    onlyReview () {
+      if (!this.$route.query.onlyReview) return false
+      return this.$route.query.onlyReview
+    },
+    pid () {
+      return this.$route.query.pid
     }
   },
   mounted () {
-    getPayedOrder({'oid': this.oid}).then(res => {
-      const {data} = res
-      if (CODES.SUCCESS == data.code) {
-        this.orderData = data.data
-      }
-    })
+    this.getPayedOrder()
+    this.getReviews()
   },
   methods: {
     submitReview () {
-      review({'oid': this.oid}).then(res => {
+      review({'oid': this.oid, 'review': this.review}).then(res => {
         const {data} = res
         if (CODES.SUCCESS == data.code) {
           this.reviewList = data.data
+          var pid = data.pid
+          this.$router.push({path: '/buyStep/stepReview', query: {oid: this.oid, pid: pid, onlyReview: true}})
         }
       })
+    },
+    getReviews () {
+      var pid = this.pid
+      if (!pid || !this.onlyReview) return
+      getReviews({pid: this.pid, page: this.pager.page}).then(res => {
+        const {data} = res
+        if (CODES.SUCCESS == data.code) {
+          this.pager.total = data.total
+          this.reviewList = data.data.map(item => {
+            return {createDate: item.createDate, content: item.content, username: item.user.name}
+          })
+        }
+      })
+    },
+    getPayedOrder () {
+      getPayedOrder({'oid': this.oid}).then(res => {
+        const {data} = res
+        if (CODES.SUCCESS == data.code) {
+          this.orderData = data.data
+        }
+      })
+    },
+    pagerChange (page) {
+      this.pager.page = page
+      this.getReviews()
     },
     formatPrice (price) {
       if (!price) return '0.00'
@@ -96,6 +150,18 @@ export default {
     },
     formatDateCN (time) {
       return formatDateCN(time)
+    },
+    formatDAT (time) {
+      return formatDAT(time)
+    }
+  },
+  watch: {
+    '$route' () {
+      console.log('change')
+      if (this.$route.query.hasOwnProperty('onlyReview') && this.$route.query.onlyReview) {
+        this.getReviews()
+        this.getPayedOrder()
+      }
     }
   }
 }
@@ -154,8 +220,8 @@ export default {
         }
       }
     }
-    .review-board{
-      margin-top:0.2rem;
+    .all-reviews{
+      margin-bottom:0.2rem;
       .brow{
         .top{width: 1.8rem;height: 4px;background: #c40000}
         .line{
@@ -178,12 +244,33 @@ export default {
           span{color:#284ca5}
         }
       }
+      .review-list{
+        li{
+          padding:0.2rem;
+          border-bottom:1px solid #ccccdd;
+          p{
+            display: flex;
+            .review-time{color:#ccccdd;width: 2rem;}
+            .review-content{flex:1}
+            .review-user{
+              .anonymous{
+                color:#ccccdd
+              }
+            }
+          }
+        }
+      }
+    }
+    .review-board{
+      margin-top:0.2rem;
       .main{
         margin-top:0.2rem;
         border: 1px solid #D5D4D4;
         border-bottom:none;
         background:#f6f5f1;
-        padding: 0.3rem 0.5rem;
+        .inner{
+          padding: 0.3rem 0.5rem;
+        }
         p{font-size: 0.16rem;font-weight: bold;margin-bottom:0.2rem}
         .text{
           display: flex;
@@ -215,22 +302,24 @@ export default {
             }
           }
         }
-      }
-      .submit-review{
-        border: 1px solid #D5D4D4;
-        border-top:none;
-        padding: 0.2rem 0;
-        @include flexCenter();
-        button{
-          width: 72px;
-          height: 26px;
-          border-radius: 2px;
-          background-color: #C40000;
-          color: white;
-          border-width: 0px;
-          font-weight: bold;
+        .submit-review{
+          border: 1px solid #D5D4D4;
+          border-top:none;
+          background:#fff;
+          padding: 0.2rem 0;
+          @include flexCenter();
+          button{
+            width: 72px;
+            height: 26px;
+            border-radius: 2px;
+            background-color: #C40000;
+            color: white;
+            border-width: 0px;
+            font-weight: bold;
+          }
         }
       }
+
     }
   }
 

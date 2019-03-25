@@ -38,7 +38,7 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column label="商品总价" align="center">
+          <el-table-column width="150px" label="商品总价" align="center">
             <template slot-scope="scope">
               <div class="product-total">
                 <p><strong>￥{{formatPrice(scope.row.total)}}</strong></p>
@@ -96,13 +96,7 @@ export default {
     }
   },
   mounted () {
-    getPayedOrder({'oid': this.oid}).then(res => {
-      const {data} = res
-      if (CODES.SUCCESS == data.code) {
-        this.orderData = data.data
-        console.log(this.orderData)
-      }
-    })
+    this.getPayedOrder()
   },
   methods: {
     confirmPay () {
@@ -110,6 +104,15 @@ export default {
         const {data} = res
         if (CODES.SUCCESS == data.code) {
           this.$router.push('/buyStep/stepSuccess')
+        }
+      })
+    },
+    getPayedOrder () {
+      getPayedOrder({'oid': this.oid}).then(res => {
+        const {data} = res
+        if (CODES.SUCCESS == data.code) {
+          this.orderData = data.data
+          console.log(this.orderData)
         }
       })
     },
@@ -161,7 +164,9 @@ export default {
       img{width: 0.5rem;height:0.5rem;}
     a{flex:1}
     }
-  .product-total>p{font-size: 18px;font-weight:bold;}
+    .product-total{
+      p{font-size: 18px;font-weight:bold;}
+    }
   }
 
   .pay-price{
@@ -191,7 +196,7 @@ export default {
     button{
       display: inline-block;
       margin-top: 0.2rem;
-      width: 67px;
+      width: 70px;
       height: 30px;
       border: 1px solid #E67C00;
       background-color: #F4A21D;

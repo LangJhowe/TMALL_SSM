@@ -119,6 +119,14 @@
                 <p class="info"><span>{{formatDate(r.createDate)}}</span> <span>{{r.user.name}}(匿名)</span></p>
               </li>
             </ul>
+            <div class="pager">
+              <el-pagination
+                layout="prev, pager, next"
+                :total="pager.total"
+                :current-page="pager.page"
+                @current-change="pagerChange">
+              </el-pagination>
+            </div>
           </el-tab-pane>
         </el-tabs>
       </div>
@@ -158,6 +166,11 @@ export default {
         uid: getUser() ? getUser().id : '',
         pid: '',
         num: 1
+      },
+
+      pager: {
+        total: 1,
+        page: 1
       }
     }
   },
@@ -191,14 +204,19 @@ export default {
       })
     },
     getProductReview () {
-      getReviews(this.pid).then(res => {
+      getReviews({'pid': this.pid, 'page': this.pager.page}).then(res => {
         const { data } = res
         if (data.code == CODES.SUCCESS) {
           this.productReviews = data.data
+          this.pager.total = data.total
         }
       })
     },
     handleChange () {},
+    pagerChange (page) {
+      this.pager.page = page
+      this.getProductReview()
+    },
     buyNow () {
       if (!this.needOpenLoginBox()) {
         buyOneProduct(this.buyForm).then(res => {

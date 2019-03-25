@@ -4,7 +4,7 @@
       <el-tabs v-model="activeTab" @tab-click="tabsClick">
         <el-tab-pane v-for="tab in tabsItem" :label="tab.label" :name="tab.name" :key="tab.name"></el-tab-pane>
       </el-tabs>
-      <el-table :data="orderList"
+      <el-table :data="filterOrderList"
         row-class-name="myrow">
         <el-table-column v-for="item in tableItem" :key="item.label"
           :label="item.label" :width="fitColumnWidth(item.label)" >
@@ -74,6 +74,7 @@
               <div class="column-main">
                 <div class="operator">
                   <el-button
+                    v-if="scope.row.status!='finish'"
                     :type="fitBtnType(scope.row.status)"
                     @click="fitDoAction(scope.row)">
                     {{fitOperateText(scope.row.status)}}</el-button>
@@ -116,13 +117,21 @@ export default {
       orderList: []
     }
   },
+  computed: {
+    filterOrderList () {
+      var filterType = this.activeTab
+      if (filterType == 'all') return this.orderList
+      return this.orderList.filter(item => {
+        return filterType == item.status
+      })
+    }
+  },
   activated () {
     this.getList()
   },
   methods: {
     tabsClick (value) {
       var sortType = value.name
-      console.log(sortType)
     },
     getList () {
       if (!getUser()) return

@@ -483,46 +483,39 @@ public class ForeController {
 	public String getReviews(@RequestBody String param) {
     	JSONObject rjo = new JSONObject();
     	JSONObject gjo = QSToJSON.toJSON(param);
-    	if(!gjo.containsKey("pid")) {
-    		rjo.put("code", "600051");
-    		rjo.put("msg", "缺少字段pid");
-    	}else {
-    		String pidStr = gjo.get("pid").toString();
-    		if(pidStr=="") {
-        		rjo.put("code", "600052");
-        		rjo.put("msg", "缺少参数pid");
-    		}else {
-    			int pid = Integer.parseInt(pidStr);
-    			Page page = new Page();
-        		int pageSize = 10;
-        		if(!gjo.containsKey("page")) {
-        			page.setStart(0);
-        		}else {
-        			int requestPageStart = Integer.valueOf(gjo.get("page").toString());
-        			int pageStart = requestPageStart>0?requestPageStart-1:0;
-        			page.setStart(pageStart*pageSize);
-        		}
-        		PageHelper.offsetPage(page.getStart(), pageSize);
-        		
-    			List<Review> reviews = reviewService.list(pid);
-    			reviews.forEach(item->{
-    				String name = item.getUser().getName();
-    				String firstStr = name.substring(0, 1);
-    				String endStr = name.substring(name.length()-2, name.length()-1);
-    				item.getUser().setName(firstStr + "***" + endStr);
-    			});
-        		int total = (int) new PageInfo<>(reviews).getTotal();
-        		int pageNum = (int) new PageInfo<>(reviews).getPageNum();
-        		int pages = (int) new PageInfo<>(reviews).getPages();
-        		int size = (int) new PageInfo<>(reviews).getPageSize();
-    			rjo.put("code", "000000");
-    			rjo.put("data", reviews);
-            	rjo.put("total", total);
-            	rjo.put("pageNum", pageNum);
-            	rjo.put("pages", pages);
-            	rjo.put("size",size);
-    		}
-    	}
+    	MyJSONUtil.setJo(gjo);
+    	if(!MyJSONUtil.isContainKey("pid")) return MyJSONUtil.getErrorResponse(600051);
+    	if(!MyJSONUtil.keyHasValue("pid")) return MyJSONUtil.getErrorResponse(600052);
+		int pid = Integer.parseInt(gjo.get("pid").toString());
+		Page page = new Page();
+		int pageSize = 10;
+		if(!gjo.containsKey("page")) {
+			page.setStart(0);
+		}else {
+			int requestPageStart = Integer.valueOf(gjo.get("page").toString());
+			int pageStart = requestPageStart>0?requestPageStart-1:0;
+			page.setStart(pageStart*pageSize);
+		}
+		PageHelper.offsetPage(page.getStart(), pageSize);
+		
+		List<Review> reviews = reviewService.list(pid);
+		reviews.forEach(item->{
+			String name = item.getUser().getName();
+			String firstStr = name.substring(0, 1);
+			String endStr = name.substring(name.length()-1, name.length());
+			item.getUser().setName(firstStr + "***" + endStr);
+			item.getUser().setPassword(null);
+		});
+		int total = (int) new PageInfo<>(reviews).getTotal();
+		int pageNum = (int) new PageInfo<>(reviews).getPageNum();
+		int pages = (int) new PageInfo<>(reviews).getPages();
+		int size = (int) new PageInfo<>(reviews).getPageSize();
+		rjo.put("code", "000000");
+		rjo.put("data", reviews);
+    	rjo.put("total", total);
+    	rjo.put("pageNum", pageNum);
+    	rjo.put("pages", pages);
+    	rjo.put("size",size);
     	
 		return JSONObject.toJSONString(rjo).toString();
 	}
@@ -801,10 +794,9 @@ public class ForeController {
 		review.setCreateDate(new Date());
 		review.setUid(o.getUid());
 		reviewService.add(review);
-		List<Review> rs = reviewService.list(p.getId());
 		rjo.put("code", "000000");
 		rjo.put("msg", "成功评论");
-		rjo.put("data", rs);
+		rjo.put("pid", p.getId());
 		return rjo.toJSONString().toString();
 	}
 }
