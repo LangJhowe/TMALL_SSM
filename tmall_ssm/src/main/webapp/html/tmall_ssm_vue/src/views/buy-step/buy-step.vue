@@ -37,6 +37,8 @@ export default {
       switch (path) {
         case '/buyStep/stepPayed': return true
         case '/buyStep/bought': return true
+        case '/buyStep/stepConfirm': return true
+        case '/buyStep/stepSuccess': return true
         default:return false
       }
     },

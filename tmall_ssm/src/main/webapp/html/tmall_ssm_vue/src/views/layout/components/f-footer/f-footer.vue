@@ -147,7 +147,10 @@ export default {
 
 <style lang="scss">
 .f_footer{
-  position: relative;
+  position: absolute;
+  width: 100%;
+  bottom: 0;
+  // position: relative;
   .ensure{
     padding: 0.30rem 0;
     border-top:1px solid #e7e7e7;

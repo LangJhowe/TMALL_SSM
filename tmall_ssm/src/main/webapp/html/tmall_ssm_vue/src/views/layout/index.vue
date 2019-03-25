@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="layout">
     <nav-topbar></nav-topbar>
     <f-head></f-head>
     <main class="f_main">

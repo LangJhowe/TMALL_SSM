@@ -1,5 +1,5 @@
 <template>
-  <div class="registry-page">
+  <div class="extra-layout">
     <nav-topbar></nav-topbar>
     <div class="f_header">
       <div class="m_container">
@@ -28,7 +28,7 @@ export default {
 </script>
 
 <style lang="scss">
-.registry-page{
+.extra-layout{
   .f_header{
     .m_container{
       display: flex;

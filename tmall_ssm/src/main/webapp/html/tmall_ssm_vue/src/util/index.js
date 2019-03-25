@@ -46,3 +46,15 @@ export function formatTime (dateStr) {
   var array = [hour, min, seconds]
   return array.join(':')
 }
+
+export function formatDAT (dateStr) {
+  return formatDate(dateStr) + ' ' + formatTime(dateStr)
+}
+
+export function formatDateCN (dateStr) {
+  var date = new Date(dateStr)
+  var year = date.getFullYear()
+  var month = parseFloat(date.getMonth() + 1) < 10 ? '0' + (date.getMonth() + 1) : (date.getMonth() + 1)
+  var day = parseFloat(date.getDate()) < 10 ? '0' + date.getDate() : date.getDate()
+  return `${year}年${month}月${day}日`
+}

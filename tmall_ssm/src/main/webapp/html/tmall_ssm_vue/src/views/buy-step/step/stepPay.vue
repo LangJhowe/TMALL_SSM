@@ -17,13 +17,13 @@ export default {
     total () {
       return formatPrice(this.$route.query.total, 2)
     },
-    orderId () {
-      return this.$route.query.orderId
+    oid () {
+      return this.$route.query.oid
     }
   },
   methods: {
     confirmPay () {
-      var form = {total: this.total, orderId: this.orderId}
+      var form = {total: this.total, oid: this.oid}
       confirmPay(form).then(res => {
         const {data} = res
         if (CODES.SUCCESS == data.code) {

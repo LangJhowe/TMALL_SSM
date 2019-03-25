@@ -22,7 +22,7 @@
         <li class="nav-item fl"><a @click="logout()">退出</a></li>
       </ul>
       <ul class="right fr">
-        <li class="nav-item fl"><a href="#">我的订单</a></li>
+        <li class="nav-item fl"><router-link to="/buyStep/bought">我的订单</router-link></li>
         <li class="nav-item fl"><a href="#">
             <i class="glyphicon glyphicon-shopping-cart redColor"></i>
             购物车0件

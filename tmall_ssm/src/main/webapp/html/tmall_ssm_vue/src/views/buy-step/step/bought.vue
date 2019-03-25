@@ -89,7 +89,7 @@
 </template>
 
 <script>
-import {getOrders} from '@/api/user'
+import {getOrders, askDelivery} from '@/api/user'
 import CODES from '@/api/config'
 import {formatDate, formatTime, formatPrice} from '@/util'
 import {getUser} from '@/util/auth'
@@ -153,7 +153,7 @@ export default {
         case 'waitPay':return 'primary'
         case 'waitDelivery':return
         case 'waitConfirm':return 'primary'
-        case 'waitReview':return 'info'
+        case 'waitReview':return ''
         case 'finish':return
         case 'delete':return
         default: return false
@@ -161,7 +161,7 @@ export default {
     },
     fitOperateText (status) {
       switch (status) {
-        case 'waitPay':return '待付'
+        case 'waitPay':return '付款'
         case 'waitDelivery':return '催卖家发货'
         case 'waitConfirm':return '确认收货'
         case 'waitReview':return '评价'
@@ -174,23 +174,39 @@ export default {
       var status = row.status
       var oid = row.id
       var total = row.total
+      var doApi, form
       switch (status) {
-        case 'waitPay': var s = 1
-
+        case 'waitDelivery':
+          form = {'oid': oid}
+          doApi = askDelivery
           break
-        case 'waitDelivery':return '催卖家发货'
-
+        case 'waitPay':
+          doApi = null
+          form = null
+          this.$router.push({path: '/buyStep/stepPay', query: {oid: oid, total: total}})
           break
-        case 'waitConfirm':return '确认收货'
-
+        case 'waitConfirm':
+          doApi = null
+          form = null
+          this.$router.push({path: '/buyStep/stepConfirm', query: {oid: oid}})
           break
-        case 'waitReview':return '评价'
+        case 'waitReview':
+          doApi = null
+          form = null
+          this.$router.push({path: '/buyStep/stepReview', query: {oid: oid}})
           break
 
-        case 'finish':return ''
-        case 'delete':return ''
-        default: return ''
+        case 'finish':break
+        case 'delete':break
+        default: doApi = null; form = null
       }
+      if (!doApi || !form) return
+      doApi(form).then(res => {
+        const {data} = res
+        if (CODES.SUCCESS == data.code) {
+          this.getList()
+        }
+      })
     }
   }
 }

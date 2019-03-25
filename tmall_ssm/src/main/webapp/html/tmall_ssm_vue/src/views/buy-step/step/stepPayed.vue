@@ -36,7 +36,7 @@ export default {
   },
   computed: {
     oid () {
-      return this.$route.query.orderId
+      return this.$route.query.oid
     }
   },
   mounted () {
@@ -47,18 +47,14 @@ export default {
       return formatPrice(num, 2)
     },
     flashOrderData () {
-      getPayedOrder({'orderId': this.oid}).then(res => {
+      if (!this.oid) return
+      getPayedOrder({'oid': this.oid}).then(res => {
         const {data} = res
         if (CODES.SUCCESS == data.code) {
           this.order.address = data.data.address
           this.order.total = data.data.total
         }
       })
-    }
-  },
-  watch: {
-    '$route' (to, from) {
-      this.flashOrderData()
     }
   }
 }

@@ -190,7 +190,7 @@ export default {
             createOrder(this.orderForm).then(res => {
               const {data} = res
               if (CODES.SUCCESS == data.code) {
-                this.$router.push({path: '/buyStep/stepPay', query: {total: data.total, orderId: data.orderId}})
+                this.$router.push({path: '/buyStep/stepPay', query: {total: data.total, oid: data.oid}})
               }
             })
           }

@@ -659,7 +659,7 @@ public class ForeController {
 		rjo.put("code", "000000");
 		rjo.put("msg", "创建订单成功");
 		rjo.put("total", total);
-		rjo.put("orderId", order.getId());
+		rjo.put("oid", order.getId());
 		return rjo.toJSONString().toString();
 	}
 
@@ -670,9 +670,9 @@ public class ForeController {
 		JSONObject gjo = QSToJSON.toJSON(param);
 		JSONObject rjo = new JSONObject();
 		MyJSONUtil.setJo(gjo);
-		if(!MyJSONUtil.isContainKey("orderId")) return MyJSONUtil.getErrorResponse(600111);
-		if(!MyJSONUtil.keyHasValue("orderId")) return MyJSONUtil.getErrorResponse(600112);
-		int oid = Integer.parseInt(gjo.get("orderId").toString());
+		if(!MyJSONUtil.isContainKey("oid")) return MyJSONUtil.getErrorResponse(600111);
+		if(!MyJSONUtil.keyHasValue("oid")) return MyJSONUtil.getErrorResponse(600112);
+		int oid = Integer.parseInt(gjo.get("oid").toString());
 		Order order = orderService.get(oid);
 		order.setStatus(OrderService.waitDelivery);
 		order.setPayDate(new Date());
@@ -691,12 +691,14 @@ public class ForeController {
 		JSONObject gjo = QSToJSON.toJSON(param);
 		JSONObject rjo = new JSONObject();
 		MyJSONUtil.setJo(gjo);
-		if(!MyJSONUtil.isContainKey("orderId")) return MyJSONUtil.getErrorResponse(600111);
-		if(!MyJSONUtil.keyHasValue("orderId")) return MyJSONUtil.getErrorResponse(600112);
-		int oid = Integer.parseInt(gjo.get("orderId").toString());
-		System.out.println("oid=" + oid);
+		if(!MyJSONUtil.isContainKey("oid")) return MyJSONUtil.getErrorResponse(600111);
+		if(!MyJSONUtil.keyHasValue("oid")) return MyJSONUtil.getErrorResponse(600112);
+		int oid = Integer.parseInt(gjo.get("oid").toString());
 		Order order = orderService.get(oid);
 		orderItemService.fill(order);
+		Product p = order.getOrderItems().get(0).getProduct();
+		productService.setSaleAndReviewNumber(p);
+		
 		rjo.put("code","000000");
 		rjo.put("msg","成功获取订单信息");
 		rjo.put("data", order);
@@ -718,6 +720,91 @@ public class ForeController {
 		orderItemService.fill(os);
 		rjo.put("code", "000000");
 		rjo.put("data", os);
+		return rjo.toJSONString().toString();
+	}
+	
+	//14催发货
+	@ResponseBody
+	@RequestMapping(value="/askDelivery",method=RequestMethod.POST,produces= {"application/json;charset=UTF-8"})
+	public String askDelivery(@RequestBody String param) {
+		JSONObject gjo = QSToJSON.toJSON(param);
+		JSONObject rjo = new JSONObject();
+		MyJSONUtil.setJo(gjo);
+		if(!MyJSONUtil.isContainKey("oid")) return MyJSONUtil.getErrorResponse(600141);
+		if(!MyJSONUtil.keyHasValue("oid")) return MyJSONUtil.getErrorResponse(600142);
+		int oid = Integer.parseInt(gjo.get("oid").toString());
+		Order o = orderService.get(oid);
+		o.setDeliveryDate(new Date());
+		o.setStatus(OrderService.waitConfirm);
+		orderService.update(o);
+		rjo.put("code", "000000");
+		rjo.put("msg", "成功催卖家发货");
+		return rjo.toJSONString().toString();
+	}
+	
+	//15确认收货
+	@ResponseBody
+	@RequestMapping(value="/confirmGot",method=RequestMethod.POST,produces= {"application/json;charset=UTF-8"})
+	public String confirmGot(@RequestBody String param) {
+		JSONObject gjo = QSToJSON.toJSON(param);
+		JSONObject rjo = new JSONObject();
+		MyJSONUtil.setJo(gjo);
+		if(!MyJSONUtil.isContainKey("oid")) return MyJSONUtil.getErrorResponse(600151);
+		if(!MyJSONUtil.keyHasValue("oid")) return MyJSONUtil.getErrorResponse(600152);
+		int oid = Integer.parseInt(gjo.get("oid").toString());
+		Order o = orderService.get(oid);
+		return "ok";
+	}
+	//16确认付款
+	@ResponseBody
+	@RequestMapping(value="/finalConfirmPay",method=RequestMethod.POST,produces= {"application/json;charset=UTF-8"})
+	public String finalConfirmPay(@RequestBody String param) {
+		JSONObject gjo = QSToJSON.toJSON(param);
+		JSONObject rjo = new JSONObject();
+		MyJSONUtil.setJo(gjo);	
+		if(!MyJSONUtil.isContainKey("oid")) return MyJSONUtil.getErrorResponse(600161);
+		if(!MyJSONUtil.keyHasValue("oid")) return MyJSONUtil.getErrorResponse(600162);
+		int oid = Integer.parseInt(gjo.get("oid").toString());
+		Order o = orderService.get(oid);
+		o.setStatus(OrderService.waitReview);
+		o.setConfirmDate(new Date());
+		orderService.update(o);
+		rjo.put("code","000000");
+		rjo.put("msg","交易已经成功");
+		return rjo.toJSONString().toString();
+	}
+	
+	//17评价
+	@ResponseBody
+	@RequestMapping(value="/review",method=RequestMethod.POST,produces= {"application/json;charset=UTF-8"})
+	public String review(@RequestBody String param) {
+		JSONObject gjo = QSToJSON.toJSON(param);
+		JSONObject rjo = new JSONObject();
+		MyJSONUtil.setJo(gjo);
+		if(!MyJSONUtil.isContainKey("oid")) return MyJSONUtil.getErrorResponse(600171);
+		if(!MyJSONUtil.keyHasValue("oid")) return MyJSONUtil.getErrorResponse(600172);
+		if(!MyJSONUtil.isContainKey("review")) return MyJSONUtil.getErrorResponse(600173);
+		if(!MyJSONUtil.keyHasValue("review")) return MyJSONUtil.getErrorResponse(600174);
+		int oid = Integer.parseInt(gjo.get("oid").toString());
+		Order o = orderService.get(oid);
+		o.setStatus(OrderService.finish);
+		orderService.update(o);
+		orderItemService.fill(o);
+		
+		Product p = o.getOrderItems().get(0).getProduct();
+		String content = gjo.get("review").toString();
+		User u = userService.get(o.getUid());
+		
+		Review review = new Review();
+		review.setContent(content);
+		review.setPid(p.getId());
+		review.setCreateDate(new Date());
+		review.setUid(o.getUid());
+		reviewService.add(review);
+		List<Review> rs = reviewService.list(p.getId());
+		rjo.put("code", "000000");
+		rjo.put("msg", "成功评论");
+		rjo.put("data", rs);
 		return rjo.toJSONString().toString();
 	}
 }

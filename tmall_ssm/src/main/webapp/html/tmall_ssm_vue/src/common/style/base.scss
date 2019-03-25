@@ -1,6 +1,8 @@
 html,body{
   font-size: 100px;
+  height: 100%;
 }
+body{min-height: 100%;}
 
 ul{margin:0;padding:0}
 li{

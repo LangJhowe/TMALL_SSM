@@ -54,3 +54,39 @@ export function getOrders (form) {
     data: Qs.stringify(form)
   })
 }
+
+// 催卖家发货
+export function askDelivery (form) {
+  return request({
+    url: '/askDelivery',
+    method: 'post',
+    data: Qs.stringify(form)
+  })
+}
+
+// 确认收货
+export function confirmGot (form) {
+  return request({
+    url: '/confirmGot?',
+    method: 'post',
+    data: Qs.stringify(form)
+  })
+}
+
+// 最终确认付款
+export function finalConfirmPay (form) {
+  return request({
+    url: '/finalConfirmPay?',
+    method: 'post',
+    data: Qs.stringify(form)
+  })
+}
+
+// 评价
+export function review (form) {
+  return review({
+    url: '/review?',
+    method: 'post',
+    data: Qs.stringify(form)
+  })
+}

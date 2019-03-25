@@ -18,6 +18,7 @@ export default {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-size: 0.12rem;
+  height: 100%;
 }
 </style>
 

@@ -17,6 +17,10 @@ const BuySteps = (resolve) => { require(['@/views/buy-step/buy-step'], resolve) 
 const BuyStep1 = (resolve) => { require(['@/views/buy-step/step/step1'], resolve) }
 const BuyStepPay = (resolve) => { require(['@/views/buy-step/step/stepPay'], resolve) }
 const BuyStepPayed = (resolve) => { require(['@/views/buy-step/step/stepPayed'], resolve) }
+const BuyStepConfirm = (resolve) => { require(['@/views/buy-step/step/stepConfirm'], resolve) }
+const BuyStepSuccess = (resolve) => { require(['@/views/buy-step/step/stepSuccess'], resolve) }
+const BuyStepReview = (resolve) => { require(['@/views/buy-step/step/stepReview'], resolve) }
+
 const Bought = (resolve) => { require(['@/views/buy-step/step/bought'], resolve) }
 
 export default new Router({
@@ -50,6 +54,9 @@ export default new Router({
         {path: 'step1', name: 'step1', component: BuyStep1},
         {path: 'stepPay', name: 'stepPay', component: BuyStepPay},
         {path: 'stepPayed', name: 'stepPayed', component: BuyStepPayed},
+        {path: 'stepConfirm', name: 'stepConfirm', component: BuyStepConfirm},
+        {path: 'stepSuccess', name: 'stepSuccess', component: BuyStepSuccess},
+        {path: 'stepReview', name: 'stepReview', component: BuyStepReview},
         {path: 'bought', name: 'bought', component: Bought}
 
       ]

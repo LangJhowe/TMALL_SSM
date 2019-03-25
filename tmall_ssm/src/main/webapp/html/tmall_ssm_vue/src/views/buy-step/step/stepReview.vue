@@ -1,0 +1,238 @@
+<template>
+  <div class="step-review">
+    <div class="m_container">
+      <div class="review-box" v-if="orderData.id">
+        <div class="product-info" >
+          <div class="p-img">
+            <img :src="`http://localhost:8080/tmall_ssm/img/productSingle/${orderData.orderItems[0].product.firstProductImage.id}.jpg`" alt="">
+          </div>
+          <div class="p-main">
+            <p class="name">{{orderData.orderItems[0].product.name}}</p>
+            <p class="price">
+              <span class="item">价格：</span> <strong>￥{{formatPrice(orderData.orderItems[0].product.promotePrice)}}</strong>元
+            </p>
+            <p class="delivery">
+              <span class="item">配送：</span> <span>快递:0.00</span>
+            </p>
+            <p class="sales">
+              <span class="item">月销量：</span> <strong>{{orderData.orderItems[0].product.saleCount}}</strong>件
+            </p>
+            <div class="buy-msg">
+                <p><i class="reviewProductInfoRightBelowImg"></i><span>现在查看的是 您所购买商品的信息</span></p>
+                <ul>
+                  <li>于{{formatDateCN(orderData.createDate)}}下单购买了此商品</li>
+                  <li>一共购买了{{orderData.totalNumber}}件</li>
+                  <li>商品描述——{{orderData.orderItems[0].product.subTitle}}</li>
+                </ul>
+            </div>
+          </div>
+        </div>
+        <div class="review-board">
+          <div class="brow">
+            <div class="top"></div>
+            <p>累计评价 <span>{{orderData.orderItems[0].product.reviewCount}}条</span></p>
+            <div class="line"></div>
+          </div>
+          <ul class="all-review" v-if="showReviews">
+            <li></li>
+          </ul>
+          <div v-else class="main">
+            <p>其他买家,需要哦你的建议哦！</p>
+            <div class="text">
+              <label class="name" for="review">评价商品</label>
+              <div class="value">
+                <textarea v-model="review" name="review" id="review" cols="30" rows="10"></textarea>
+              </div>
+            </div>
+          </div>
+          <div class="submit-review">
+            <button @click="submitReview()">提交评价</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import CODES from '@/api/config'
+import {getPayedOrder, review} from '@/api/user'
+import {formatPrice, formatDateCN} from '@/util'
+
+export default {
+  data () {
+    return {
+      orderData: {},
+      review: '',
+      showReviews: false,
+      reviewList: []
+    }
+  },
+  computed: {
+    oid () {
+      return this.$route.query.oid
+    }
+  },
+  mounted () {
+    getPayedOrder({'oid': this.oid}).then(res => {
+      const {data} = res
+      if (CODES.SUCCESS == data.code) {
+        this.orderData = data.data
+      }
+    })
+  },
+  methods: {
+    submitReview () {
+      review({'oid': this.oid}).then(res => {
+        const {data} = res
+        if (CODES.SUCCESS == data.code) {
+          this.reviewList = data.data
+        }
+      })
+    },
+    formatPrice (price) {
+      if (!price) return '0.00'
+      return formatPrice(price, 2)
+    },
+    formatDateCN (time) {
+      return formatDateCN(time)
+    }
+  }
+}
+</script>
+
+<style lang="scss">
+@import "@/common/style/variable.scss";
+.step-review{
+  p{margin: 0;}
+  .review-box{
+    .product-info{
+      display: flex;
+      .p-img{
+        border:1px solid #ddd;
+        width: 4.64rem;
+        text-align: center;
+        img{width: 4rem;height:4rem;}
+      }
+      .p-main{
+        color:#999;
+        border-top:1px solid #ddd;
+        padding:0 0.3rem;
+        .name{
+          margin:0.2rem 0;
+          font-size: 0.16rem;
+          font-weight: bold;
+        }
+        p>.item{
+          display: inline-block;
+          width: 0.8rem;
+          height: 0.2rem;
+          line-height: 0.2rem;
+        }
+        .price>strong{color:#c40000;font-size: 0.2rem;font-weight: bold}
+        .sales>strong{color:#c40000;font-size: 0.14rem;font-weight: bold}
+        .buy-msg{
+          background: #FDFBFA;
+          border: 1px solid #F6F5F3;
+          min-height: 2.5rem;
+          margin-top: 0.2rem;
+          p{
+            border: 1px solid #E1E1E1;
+            display: flex;
+            font-size: 0.2rem;
+            background: #FDFBFA;
+            color: #f6c87f;
+            span{line-height: 0.42rem;}
+          }
+          ul{
+            padding: 0.05rem;
+            li{
+              margin: 0 0.2rem;
+              list-style-type:decimal;
+            }
+          }
+        }
+      }
+    }
+    .review-board{
+      margin-top:0.2rem;
+      .brow{
+        .top{width: 1.8rem;height: 4px;background: #c40000}
+        .line{
+          height: 15px;
+          background: #f6f5f1;
+          border: 1px solid #D5D4D4;
+
+          }
+        p{
+          width: 1.8rem;
+          background: #f6f5f1;
+          text-align: center;
+          font-size: 0.14rem;
+          font-weight: bold;
+          padding:0.1rem 0;
+          border-left: 1px solid #D5D4D4;
+          border-right: 1px solid #D5D4D4;
+          position: relative;
+          top:2px;
+          span{color:#284ca5}
+        }
+      }
+      .main{
+        margin-top:0.2rem;
+        border: 1px solid #D5D4D4;
+        border-bottom:none;
+        background:#f6f5f1;
+        padding: 0.3rem 0.5rem;
+        p{font-size: 0.16rem;font-weight: bold;margin-bottom:0.2rem}
+        .text{
+          display: flex;
+          align-items:center;
+          height: 1.5rem;
+          position: relative;
+          .name{
+            margin:0;
+            width: 0.8rem;
+            height: 100%;
+            padding: 0 0.1rem;
+            line-height: 1.5rem;
+            background: #fff;
+            border:1px solid #ddd;
+          }
+          .value{
+            height: 100%;
+            width: 4.5rem;
+            background: #fff;
+            border:1px solid #ddd;
+            border-left:none;
+            padding:0.1rem;
+            textarea{
+              width: 4.3rem;
+              height: 1.3rem;
+              resize: none;
+              border: none;
+              // width: ;
+            }
+          }
+        }
+      }
+      .submit-review{
+        border: 1px solid #D5D4D4;
+        border-top:none;
+        padding: 0.2rem 0;
+        @include flexCenter();
+        button{
+          width: 72px;
+          height: 26px;
+          border-radius: 2px;
+          background-color: #C40000;
+          color: white;
+          border-width: 0px;
+          font-weight: bold;
+        }
+      }
+    }
+  }
+
+}
+</style>
