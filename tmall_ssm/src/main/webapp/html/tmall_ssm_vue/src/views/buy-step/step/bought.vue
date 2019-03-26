@@ -233,6 +233,14 @@ export default {
       })
     }
   }
+  // watch: {
+  //   '$route' (to, from) {
+  //     console.log(to)
+  //     if (to.path == '/buyStep/cart') {
+  //       this.getList()
+  //     }
+  //   }
+  // }
 }
 </script>
 

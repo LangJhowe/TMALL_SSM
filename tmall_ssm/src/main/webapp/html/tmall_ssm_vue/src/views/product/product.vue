@@ -269,6 +269,7 @@ export default {
       if (this.pid == from.query.pid) return
       this.pid = this.$route.query.pid
       this.buyForm.pid = this.$route.query.pid
+      this.buyForm.num = 1
       this.getProductData()
       this.getProductReview()
     }

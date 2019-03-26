@@ -235,6 +235,13 @@ export default {
       this.isIndeterminate = false
     }
 
+  },
+  watch: {
+    '$route' (to, from) {
+      if (to.path == '/buyStep/cart') {
+        this.getCartsData()
+      }
+    }
   }
 }
 </script>
