@@ -42,6 +42,7 @@ public class OrderItemServiceImpl implements OrderItemService{
 	@Override
 	public OrderItem get(int id) {
 		OrderItem result = orderItemMapper.selectByPrimaryKey(id);
+		if(null==result) return null;
 		setProduct(result);
 		return result;
 	}

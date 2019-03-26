@@ -10,7 +10,6 @@
 </template>
 <script>
 import {confirmPay} from '@/api/user'
-import CODES from '@/api/config'
 import {formatPrice} from '@/util'
 export default {
   computed: {
@@ -23,11 +22,15 @@ export default {
   },
   methods: {
     confirmPay () {
-      var form = {total: this.total, oid: this.oid}
-      confirmPay(form).then(res => {
+      var oidList = this.$store.getters.oidList
+      confirmPay(oidList).then(res => {
         const {data} = res
-        if (CODES.SUCCESS == data.code) {
-          this.$router.push({path: '/buyStep/stepPayed', query: form})
+        var total = data.data.total
+        var address = data.data.address
+        var totalNumber = data.data.totalNumber
+        if (this.$CODES.SUCCESS == data.code) {
+          this.$router.push({path: '/buyStep/stepPayed', query: {total: total, address: address}})
+          this.$store.dispatch('reduceCartNum', totalNumber)
         }
       })
     }

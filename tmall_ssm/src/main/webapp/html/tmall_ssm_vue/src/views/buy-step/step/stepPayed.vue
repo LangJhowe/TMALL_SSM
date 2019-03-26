@@ -6,8 +6,8 @@
       </div>
       <div class="order-info">
         <ul>
-          <li class="address">收货地址: <strong>{{order.address}}</strong></li>
-          <li class="total">实付款:<strong> ￥{{formatPrice(order.total)}}</strong></li>
+          <li class="address">收货地址: <strong>{{address}}</strong></li>
+          <li class="total">实付款:<strong> ￥{{formatPrice(total)}}</strong></li>
           <li class="arrivalDate">预计08月08日送达</li>
         </ul>
         <div class="other-link">
@@ -22,39 +22,23 @@
 </template>
 
 <script>
-import CODES from '@/api/config'
-import {getPayedOrder} from '@/api/user'
 import {formatPrice} from '@/util'
 export default {
   data () {
     return {
-      order: {
-        address: '',
-        total: 0
-      }
     }
   },
   computed: {
-    oid () {
-      return this.$route.query.oid
+    total () {
+      return this.$route.query.total
+    },
+    address () {
+      return this.$route.query.address
     }
-  },
-  mounted () {
-    this.flashOrderData()
   },
   methods: {
     formatPrice (num) {
       return formatPrice(num, 2)
-    },
-    flashOrderData () {
-      if (!this.oid) return
-      getPayedOrder({'oid': this.oid}).then(res => {
-        const {data} = res
-        if (CODES.SUCCESS == data.code) {
-          this.order.address = data.data.address
-          this.order.total = data.data.total
-        }
-      })
     }
   }
 }

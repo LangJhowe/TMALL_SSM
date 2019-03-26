@@ -18,7 +18,6 @@
 <script>
 import SproductWall from '@/components/sproduct-wall/sproduct-wall'
 import {searchByKeywords} from '@/api/home'
-import CODES from '@/api/config'
 
 export default {
   components: {
@@ -48,7 +47,7 @@ export default {
     flashProductData () {
       searchByKeywords(this.searchForm).then(res => {
         const {data} = res
-        if (CODES.SUCCESS == data.code) {
+        if (this.$CODES.SUCCESS == data.code) {
           this.productsData = data.data
           this.pager.pages = data.pages
           this.pager.page = data.pageNum

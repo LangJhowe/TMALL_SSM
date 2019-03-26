@@ -19,21 +19,30 @@ export function buyOneProduct (form) {
   })
 }
 
+// 添加购物车
+export function addCart (form) {
+  return request({
+    url: '/addCart',
+    method: 'post',
+    data: Qs.stringify(form)
+  })
+}
+
 // 获取订单
-export function getOrderItem (form) {
+export function getOrderItem (oiidList) {
   return request({
     url: '/getOrderItem',
     method: 'post',
-    data: Qs.stringify({'data': JSON.stringify(form)})
+    data: Qs.stringify({'oiidList': JSON.stringify(oiidList)})
   })
 }
 
 // 确认付款更新订单
-export function confirmPay (form) {
+export function confirmPay (oidList) {
   return request({
     url: '/confirmPay',
     method: 'post',
-    data: Qs.stringify(form)
+    data: Qs.stringify({oidList: JSON.stringify(oidList)})
   })
 }
 
@@ -86,6 +95,41 @@ export function finalConfirmPay (form) {
 export function review (form) {
   return request({
     url: '/review',
+    method: 'post',
+    data: Qs.stringify(form)
+  })
+}
+
+// 删除交易订单
+export function deleteOrder (form) {
+  return request({
+    url: '/deleteOrder',
+    method: 'post',
+    data: Qs.stringify(form)
+  })
+}
+
+// 添加购物车信息
+export function addToCart (form) {
+  return request({
+    url: '/addToCart',
+    method: 'post',
+    data: Qs.stringify(form)
+  })
+}
+
+// 获取购物车信息
+export function getCartsData (form) {
+  return request({
+    url: '/getCartsData',
+    method: 'post',
+    data: Qs.stringify(form)
+  })
+}
+// 删除购物车中的商品
+export function deleteOrderItem (form) {
+  return request({
+    url: '/deleteOrderItem',
     method: 'post',
     data: Qs.stringify(form)
   })

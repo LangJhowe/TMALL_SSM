@@ -7,10 +7,12 @@ import router from './router'
 import axios from 'axios'
 import store from './store'
 import 'normalize.css'
+import CODES from './api/config'
 // import './permission'
 import 'babel-polyfill'
 Vue.prototype.$axios = axios
 Vue.prototype.$store = store
+Vue.prototype.$CODES = CODES
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */

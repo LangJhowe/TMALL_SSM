@@ -77,7 +77,6 @@
 
 <script>
 import {getPayedOrder, finalConfirmPay} from '@/api/user'
-import CODES from '@/api/config'
 import {formatDAT, formatPrice} from '@/util'
 
 export default {
@@ -102,7 +101,7 @@ export default {
     confirmPay () {
       finalConfirmPay({oid: this.oid}).then(res => {
         const {data} = res
-        if (CODES.SUCCESS == data.code) {
+        if (this.$CODES.SUCCESS == data.code) {
           this.$router.push('/buyStep/stepSuccess')
         }
       })
@@ -110,7 +109,7 @@ export default {
     getPayedOrder () {
       getPayedOrder({'oid': this.oid}).then(res => {
         const {data} = res
-        if (CODES.SUCCESS == data.code) {
+        if (this.$CODES.SUCCESS == data.code) {
           this.orderData = data.data
           console.log(this.orderData)
         }

@@ -143,32 +143,32 @@ public class ForeController {
     @RequestMapping(value="/loginByUser",method=RequestMethod.POST,produces= {"application/json;charset=UTF-8"})
     @ResponseBody
     public String loginByUser(@RequestBody String param) {
-    	JSONObject upjo = QSToJSON.toJSON(param);
-    	JSONObject resultJo = new JSONObject();
-    	if(!upjo.containsKey("name")) {
-    		resultJo.put("code", "600001");
-    		resultJo.put("msg", "缺少字段name");
-    	}else if(!upjo.containsKey("password")){
-    		resultJo.put("code", "600002");
-    		resultJo.put("msg", "缺少字段password");
-    	}else if(!upjo.containsKey("name")&&!upjo.containsKey("password")) {
-    		resultJo.put("code", "600003");
-    		resultJo.put("msg", "缺少字段name,password");
+    	JSONObject gjo = QSToJSON.toJSON(param);
+    	JSONObject rjo = new JSONObject();
+    	MyJSONUtil.setJo(gjo);
+    	if(!MyJSONUtil.isContainKey("name")) return MyJSONUtil.getErrorResponse(600001);
+    	if(!MyJSONUtil.keyHasValue("name")) return MyJSONUtil.getErrorResponse(600002);
+    	if(!MyJSONUtil.isContainKey("password")) return MyJSONUtil.getErrorResponse(600003);
+    	if(!MyJSONUtil.keyHasValue("password")) return MyJSONUtil.getErrorResponse(600004);
+    	// 改善 需要验证码captcha
+    	String username = gjo.get("name").toString();
+    	String password = gjo.get("password").toString();
+    	User user = userService.get(username,password);
+    	if(null == user) {
+    		rjo.put("code", "600004");
+    		rjo.put("msg", "账号密码错误");
     	}else {
-        	String username = upjo.get("name").toString();
-        	String password = upjo.get("password").toString();
-        	User user = userService.get(username,password);
-
-        	if(null == user) {
-        		resultJo.put("code", "600004");
-        		resultJo.put("msg", "账号密码错误");
-        	}else {
-        		resultJo.put("code", "000000");
-            	resultJo.put("data", user);
-        	}
+    		List<OrderItem> ois = orderItemService.listByUser(user.getId());
+    		int cartNum = 0;
+    		for(OrderItem oi:ois) {
+    			cartNum += oi.getNumber();
+    		}
+    		user.setCartNum(cartNum);
+    		rjo.put("code", "000000");
+    		rjo.put("data", user);
     	}
 
-    	return JSONObject.toJSONString(resultJo).toString();
+    	return JSONObject.toJSONString(rjo).toString();
      }
     
     //注册
@@ -572,33 +572,65 @@ public class ForeController {
 	@ResponseBody
 	@RequestMapping(value="/getOrderItem",method=RequestMethod.POST,produces= {"appllication/json;charset=UTF-8"})
 	public String getOrderItem(@RequestBody String param) {
+//		try {
 		JSONObject gjo = MyJSONUtil.qsToJSON(param);
 		JSONObject rjo = new JSONObject();
-		
-		JSONObject data = JSONObject.parseObject(gjo.get("data").toString());
-		MyJSONUtil.setJo(data);
+		MyJSONUtil.setJo(gjo);
+		if(!MyJSONUtil.isContainKey("oiidList")) return MyJSONUtil.getErrorResponse(600081);
+		if(!MyJSONUtil.keyHasValue("oiidList")) return MyJSONUtil.getErrorResponse(600082);
+		System.out.println(gjo.get("oiidList").toString());
+		JSONArray oiidsJa = JSONArray.parseArray(gjo.get("oiidList").toString());
 		List<OrderItem> result = new ArrayList<OrderItem>();
-		// 有oiid 单个的时候 是立刻购买 只列出一条
-		if(MyJSONUtil.isContainKey("oiid")&&MyJSONUtil.keyHasValue("oiid")) {
-			int oiid = Integer.parseInt(data.get("oiid").toString());
+		
+		boolean isRightData = true;
+		String errorMsg = "error";
+		String rCode = "000000";
+		for(int i = 0;i<oiidsJa.size();i++) {
+			if(!oiidsJa.get(i).getClass().getSimpleName().toString().equals("JSONObject")) {
+				isRightData = false;
+				errorMsg = "oiidList数组内格式不正确";
+				rCode = "600084";
+				break;
+			}
+			JSONObject oiidJo = (JSONObject) oiidsJa.get(i);
+			MyJSONUtil.setJo(oiidJo);
+			if(!MyJSONUtil.isContainKey("oiid")) {
+				isRightData = false;
+				errorMsg = "元素缺少oiid字段";
+				rCode = "600085";
+				break;
+			}
+			if(!MyJSONUtil.keyHasValue("oiid")) {
+				isRightData = false;
+				errorMsg = "元素字段oiid参数不能为空";
+				rCode = "600086";
+				break;
+			}
+			
+			int oiid = Integer.parseInt(oiidJo.get("oiid").toString());
 			OrderItem oi = orderItemService.get(oiid);
 			if(null == oi) {
-				rjo.put("code", "600081");
-				rjo.put("msg", "找不到该订单");
-				return rjo.toJSONString().toString();
-			}else {
-				result.add(oi);
-				int pid = oi.getPid();
-				Product p = productService.get(pid);
-				productService.setFirstProductImage(p);
-				rjo.put("code", "000000");
-				rjo.put("data", result);
-				return rjo.toJSONString().toString();	
+				isRightData = false;
+				errorMsg = "元素字段oiid参数不能为空";
+				rCode = "600087";
+				break;		
 			}
-		} else if(MyJSONUtil.isContainKey("oiids")&&MyJSONUtil.keyHasValue("oiids")){
-//			List<int> oiids = data.get
+			result.add(oi);
+			Product p = productService.get(oi.getPid());
+			productService.setFirstProductImage(p);
 		}
-		return "ok";
+		
+		if(!isRightData) {
+			rjo.put("code",rCode);
+			rjo.put("msg", errorMsg);
+		}else {
+			rjo.put("code","000000");
+			rjo.put("data", result);			
+		}
+		return rjo.toJSONString().toString();
+//		} catch (Exception e) {
+//			return e.toString();
+//		}
 	}
 
 	//9创建订单
@@ -640,6 +672,7 @@ public class ForeController {
 		if(MyJSONUtil.isContainKey("userMessage")&&MyJSONUtil.keyHasValue("userMessage")) order.setUserMessage(userMessage);
 		order.setStatus(OrderService.waitPay);
 		JSONArray jao = (JSONArray) data.get("orderList");
+		System.out.println(jao.toJSONString().toString());
 		List<OrderItem> ois = new ArrayList<OrderItem>(); 
 		for(int i = 0; i<jao.size();i++) {
 			JSONObject jaoJo = (JSONObject) jao.get(i);
@@ -649,10 +682,17 @@ public class ForeController {
 		}
 		float total = orderService.add(order, ois);
 		
+		List<JSONObject> oidJOs= new ArrayList<JSONObject>();
+		for(OrderItem oi:ois) {
+			JSONObject oidJo = new JSONObject();
+			oidJo.put("oid",oi.getOid());
+			oidJo.put("oiid",oi.getId());
+			oidJOs.add(oidJo);
+		}
 		rjo.put("code", "000000");
 		rjo.put("msg", "创建订单成功");
 		rjo.put("total", total);
-		rjo.put("oid", order.getId());
+		rjo.put("data", oidJOs);
 		return rjo.toJSONString().toString();
 	}
 
@@ -661,20 +701,62 @@ public class ForeController {
 	@RequestMapping(value="/confirmPay", method=RequestMethod.POST,produces= {"application/json;charset=UTF-8"})
 	public String confirmPay(@RequestBody String param) {
 		JSONObject gjo = QSToJSON.toJSON(param);
-		JSONObject rjo = new JSONObject();
 		MyJSONUtil.setJo(gjo);
-		if(!MyJSONUtil.isContainKey("oid")) return MyJSONUtil.getErrorResponse(600111);
-		if(!MyJSONUtil.keyHasValue("oid")) return MyJSONUtil.getErrorResponse(600112);
-		int oid = Integer.parseInt(gjo.get("oid").toString());
-		Order order = orderService.get(oid);
-		order.setStatus(OrderService.waitDelivery);
-		order.setPayDate(new Date());
-		orderService.update(order);
+		if(!MyJSONUtil.isContainKey("oidList")) return MyJSONUtil.getErrorResponse(600111);
+		if(!MyJSONUtil.keyHasValue("oidList")) return MyJSONUtil.getErrorResponse(600112);
+		System.out.println(gjo.get("oidList").toString());
+		JSONArray oidListJA = JSONArray.parseArray(gjo.get("oidList").toString());
 		
-		rjo.put("code","000000");
-		rjo.put("msg","成功更新订单信息");
-		rjo.put("data", order);
-		return rjo.toJSONString().toString();
+		boolean isRight = true;
+		String rCode = "000000";
+		String errMsg = "error";
+		float total = 0f;
+		int totalNumber = 0;
+		for(int i = 0;i<oidListJA.size();i++) {
+			if(oidListJA.size() == 0) {
+				isRight = false;
+				rCode = "600113";
+				errMsg = "oidList不能为空";
+				break;
+			}
+			JSONObject oidJO = (JSONObject) oidListJA.get(i);
+			MyJSONUtil.setJo(oidJO);
+			if(!MyJSONUtil.isContainKey("oid")) {
+				isRight = false;
+				rCode = "600114";
+				errMsg = "oidList元素缺少oid字段";
+				break;	
+			}
+			if(!MyJSONUtil.keyHasValue("oid")) {
+				isRight = false;
+				rCode = "600115";
+				errMsg = "oidList元素缺少oid参数";
+				break;	
+			}
+			int oid = Integer.parseInt(oidJO.get("oid").toString());
+			Order o = orderService.get(oid);
+			orderItemService.fill(o);
+			OrderItem oi = o.getOrderItems().get(0);
+			Product p = oi.getProduct();
+			o.setStatus(OrderService.waitDelivery);
+			o.setPayDate(new Date());
+			orderService.update(o);
+			total+=p.getPromotePrice()*oi.getNumber();
+			totalNumber +=oi.getNumber();
+		}
+		if(!isRight) {
+			return MyJSONUtil.returnErrorRespones(rCode, errMsg);
+		}else {
+			JSONObject fOidJO = (JSONObject) oidListJA.get(0);
+			int fOid = Integer.parseInt(fOidJO.get("oid").toString());
+			Order fOrder = orderService.get(fOid);
+			String address = fOrder.getAddress();
+			JSONObject data = new JSONObject();
+			data.put("total",total);
+			data.put("address",address);
+			data.put("totalNumber",totalNumber);
+			return MyJSONUtil.returnRespones("000000", "成功支付交易订单",data);
+		}
 	} 
 	
 	//12获取付款后的order信息
@@ -798,5 +880,100 @@ public class ForeController {
 		rjo.put("msg", "成功评论");
 		rjo.put("pid", p.getId());
 		return rjo.toJSONString().toString();
+	}
+	
+	//18添加到购物车
+	@ResponseBody
+	@RequestMapping(value="/addToCart",method=RequestMethod.POST,produces= {"application/json;charset=UTF-8"})
+	public String addToCart(@RequestBody String param) {
+		JSONObject gjo = QSToJSON.toJSON(param);
+		JSONObject rjo = new JSONObject();
+		MyJSONUtil.setJo(gjo);
+		if(!MyJSONUtil.isContainKey("uid")) return  MyJSONUtil.getErrorResponse(600181);
+		if(!MyJSONUtil.keyHasValue("uid")) return MyJSONUtil.getErrorResponse(600182);
+		if(!MyJSONUtil.isContainKey("pid")) return  MyJSONUtil.getErrorResponse(600183);
+		if(!MyJSONUtil.keyHasValue("pid")) return MyJSONUtil.getErrorResponse(600184);
+		if(!MyJSONUtil.isContainKey("num")) return  MyJSONUtil.getErrorResponse(600185);
+		if(!MyJSONUtil.keyHasValue("num")) return MyJSONUtil.getErrorResponse(600186);
+		int pid = Integer.parseInt(gjo.get("pid").toString());
+		int uid = Integer.parseInt(gjo.get("uid").toString());
+		int num = Integer.parseInt(gjo.get("num").toString());
+		boolean found = false;
+		
+		List<OrderItem> ois = orderItemService.listByUser(uid);
+		for(OrderItem oi:ois) {
+			if(oi.getProduct().getId().intValue() == pid) {
+				oi.setNumber(oi.getNumber()+num);
+				orderItemService.update(oi);
+				found = true;
+				break;
+			}
+			
+		}
+		
+		if(!found) {
+			OrderItem oi = new OrderItem();
+			oi.setUid(uid);
+			oi.setNumber(num);
+			oi.setPid(pid);
+			orderItemService.add(oi);
+		}
+		rjo.put("code", "000000");
+		rjo.put("msg","已成功添加到购物车");
+		return rjo.toJSONString().toString();
+	}
+	
+	//19获取用户购物车信息
+	@ResponseBody
+	@RequestMapping(value="/getCartsData",method= RequestMethod.POST,produces= {"application/json;charset=UTF-8"})
+	public String getCartsData(@RequestBody String param) {
+		JSONObject gjo = QSToJSON.toJSON(param);
+		JSONObject rjo = new JSONObject();
+		MyJSONUtil.setJo(gjo);
+		if(!MyJSONUtil.isContainKey("uid")) return MyJSONUtil.getErrorResponse(600191);
+		if(!MyJSONUtil.keyHasValue("uid")) return MyJSONUtil.getErrorResponse(600192);
+		int uid = Integer.parseInt(gjo.get("uid").toString());
+		List<OrderItem> ois = orderItemService.listByUser(uid);
+		rjo.put("code","000000");
+		rjo.put("data",ois);
+		return rjo.toJSONString().toString();
+	}
+	
+	//20删除购物车商品
+	@ResponseBody
+	@RequestMapping(value="/deleteOrderItem",method=RequestMethod.POST,produces= {"application/json;charset=UTF-8"})
+	public String deleteOrderItem(@RequestBody String param) {
+		JSONObject gjo = QSToJSON.toJSON(param);
+		MyJSONUtil.setJo(gjo);
+		if(!MyJSONUtil.isContainKey("uid")) return MyJSONUtil.getErrorResponse(600201);
+		if(!MyJSONUtil.keyHasValue("uid")) return MyJSONUtil.getErrorResponse(600202);
+		if(!MyJSONUtil.isContainKey("oiid")) return MyJSONUtil.getErrorResponse(600203);
+		if(!MyJSONUtil.keyHasValue("oiid")) return MyJSONUtil.getErrorResponse(600204);
+		int uid = Integer.parseInt(gjo.get("uid").toString());
+		int oiid = Integer.parseInt(gjo.get("oiid").toString());
+		System.out.println(oiid);
+		User user = userService.get(uid);
+		OrderItem oi= orderItemService.get(oiid);
+		
+		if(null==user) return MyJSONUtil.returnErrorRespones(600205, "没有该用户");
+		if(null==oi) return MyJSONUtil.returnErrorRespones(600206, "没有该订单");
+		orderItemService.delete(oiid);
+		return MyJSONUtil.returnRespones("000000", "成功删除订单");
+	}
+	
+	//21删除订单
+	@ResponseBody
+	@RequestMapping(value="/deleteOrder",method= RequestMethod.POST,produces= {"application/json;charset=UTF-8"})
+	public String  deleteOrder(@RequestBody String param) {
+		JSONObject gjo = MyJSONUtil.qsToJSON(param);
+		MyJSONUtil.setJo(gjo);
+		if(!MyJSONUtil.isContainKey("oid")) return MyJSONUtil.getErrorResponse(600211);
+		if(!MyJSONUtil.keyHasValue("oid")) return MyJSONUtil.getErrorResponse(600212);
+		int oid = Integer.parseInt(gjo.get("oid").toString());
+		Order o = orderService.get(oid);
+		if(null == o ) MyJSONUtil.returnErrorRespones(600213, "该交易订单不存在");
+		o.setStatus(OrderService.delete);
+		orderService.update(o);
+		return MyJSONUtil.returnRespones("000000", "成功删除该交易订单");
 	}
 }

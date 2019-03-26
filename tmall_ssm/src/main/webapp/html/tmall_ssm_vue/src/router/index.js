@@ -22,6 +22,7 @@ const BuyStepSuccess = (resolve) => { require(['@/views/buy-step/step/stepSucces
 const BuyStepReview = (resolve) => { require(['@/views/buy-step/step/stepReview'], resolve) }
 
 const Bought = (resolve) => { require(['@/views/buy-step/step/bought'], resolve) }
+const Cart = (resolve) => { require(['@/views/buy-step/step/cart'], resolve) }
 
 export default new Router({
   routes: [
@@ -57,7 +58,8 @@ export default new Router({
         {path: 'stepConfirm', name: 'stepConfirm', component: BuyStepConfirm},
         {path: 'stepSuccess', name: 'stepSuccess', component: BuyStepSuccess},
         {path: 'stepReview', name: 'stepReview', component: BuyStepReview},
-        {path: 'bought', name: 'bought', component: Bought}
+        {path: 'bought', name: 'bought', component: Bought},
+        {path: 'cart', name: 'cart', component: Cart}
 
       ]
     }

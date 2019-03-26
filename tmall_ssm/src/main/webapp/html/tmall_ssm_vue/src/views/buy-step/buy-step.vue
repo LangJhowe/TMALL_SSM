@@ -39,6 +39,7 @@ export default {
         case '/buyStep/bought': return true
         case '/buyStep/stepConfirm': return true
         case '/buyStep/stepSuccess': return true
+        case '/buyStep/cart': return true
         default:return false
       }
     },

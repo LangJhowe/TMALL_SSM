@@ -69,7 +69,7 @@
 
             <div v-else-if="item.label=='交易操作'" class="order-column">
               <div class="column-head">
-                <button class="delete-btn fr glyphicon glyphicon-trash"></button>
+                <button v-if="canDelete(scope.row)" class="delete-btn fr glyphicon glyphicon-trash" @click="deleteOrder(scope.row)"></button>
               </div>
               <div class="column-main">
                 <div class="operator">
@@ -90,8 +90,7 @@
 </template>
 
 <script>
-import {getOrders, askDelivery} from '@/api/user'
-import CODES from '@/api/config'
+import {getOrders, askDelivery, deleteOrder} from '@/api/user'
 import {formatDate, formatTime, formatPrice} from '@/util'
 import {getUser} from '@/util/auth'
 export default {
@@ -131,19 +130,35 @@ export default {
   },
   methods: {
     tabsClick (value) {
-      var sortType = value.name
+      this.activeTab = value.name
     },
     getList () {
       if (!getUser()) return
       getOrders({'uid': getUser().id}).then(res => {
         const {data} = res
-        if (CODES.SUCCESS == data.code) {
+        if (this.$CODES.SUCCESS == data.code) {
           this.orderList = data.data
+        }
+      })
+    },
+    deleteOrder (data) {
+      deleteOrder({oid: data.id}).then(res => {
+        const {data} = res
+        if (this.$CODES.SUCCESS == data.code) {
+          this.getList()
+          this.$notify({
+            type: 'success',
+            message: '成功删除订单'
+          })
         }
       })
     },
     formatDate (date) {
       return formatDate(date)
+    },
+    canDelete (data) {
+      var status = data.status
+      return status == 'finish' || status == 'waitPay'
     },
     formatTime (date) {
       return formatTime(date)
@@ -212,7 +227,7 @@ export default {
       if (!doApi || !form) return
       doApi(form).then(res => {
         const {data} = res
-        if (CODES.SUCCESS == data.code) {
+        if (this.$CODES.SUCCESS == data.code) {
           this.getList()
         }
       })
@@ -269,6 +284,7 @@ $deepGray: rgb(170,170,170);
       .order-column{
         display: flex;
         flex-direction: column;
+        width: 100%;
         .column-head{
           background:#f1f1f1;
           padding:8px 10px;

@@ -81,7 +81,7 @@
               >立即购买</button>
               <button
                 class="add-cart"
-                @click="addCart()"
+                @click="addToCart()"
               ><span class="glyphicon glyphicon-shopping-cart"></span>加入购物车</button>
             </div>
           </div>
@@ -143,8 +143,7 @@
 import { NavTopbar } from '@/views/layout/components'
 import LoginBox from '@/components/login-box/login-box'
 import { getProduct, getReviews } from '@/api/home'
-import { buyOneProduct } from '@/api/user'
-import CODES from '@/api/config'
+import { buyOneProduct, addToCart } from '@/api/user'
 import { getUser } from '@/util/auth'
 import { formatPrice, formatDate } from '@/util/index'
 export default {
@@ -196,7 +195,7 @@ export default {
     getProductData () {
       getProduct(this.pid).then(res => {
         const { data } = res
-        if (data.code == CODES.SUCCESS) {
+        if (this.$CODES.SUCCESS == data.code) {
           this.productData = data.data.data
           this.productPropertys = data.data.propertys
           this.choosenImgId = data.data.data.productSingleImages[0].id
@@ -206,7 +205,7 @@ export default {
     getProductReview () {
       getReviews({'pid': this.pid, 'page': this.pager.page}).then(res => {
         const { data } = res
-        if (data.code == CODES.SUCCESS) {
+        if (this.$CODES.SUCCESS == data.code) {
           this.productReviews = data.data
           this.pager.total = data.total
         }
@@ -221,15 +220,29 @@ export default {
       if (!this.needOpenLoginBox()) {
         buyOneProduct(this.buyForm).then(res => {
           const {data} = res
-          if (data.code == CODES.SUCCESS) {
-            this.$router.push({path: '/buyStep/step1', query: {oiid: data.oiid}})
+          if (data.code == this.$CODES.SUCCESS) {
+            var oiid = data.oiid
+            var orderItemList = [{oiid: oiid}]
+            this.$store.dispatch('setCartList', orderItemList)
+            this.$router.push({path: '/buyStep/step1'})
           }
         })
       }
     },
-    addCart () {
+    addToCart () {
       if (!this.needOpenLoginBox()) {
-
+        addToCart(this.buyForm).then(res => {
+          const {data} = res
+          if (data.code == this.$CODES.SUCCESS) {
+            var num = getUser().cartNum + this.buyForm.num
+            console.log('total' + num)
+            this.$store.dispatch('setCartNum', num)
+            this.$notify({
+              type: 'success',
+              message: `成功添加${this.buyForm.num}件商品`
+            })
+          }
+        })
       }
     },
     formatDate (date) {
@@ -252,7 +265,7 @@ export default {
   },
   watch: {
     $route (to, from) {
-      if (!to.query.hasOwnProperty()) return
+      if (!to.query.hasOwnProperty('pid')) return
       if (this.pid == from.query.pid) return
       this.pid = this.$route.query.pid
       this.buyForm.pid = this.$route.query.pid

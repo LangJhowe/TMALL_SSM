@@ -13,7 +13,6 @@
 </template>
 
 <script>
-import CODES from '@/api/config'
 // import {searchByKeywords} from '@/api/home'
 
 export default {
@@ -26,7 +25,7 @@ export default {
   mounted () {
     this.$store.dispatch('fillData').then((res) => {
       const data = res.data
-      if (data.code == CODES.SUCCESS) {
+      if (this.$CODES.SUCCESS == data.code) {
         this.recommendSearchs = data.data.slice(0, 4)
       }
     })

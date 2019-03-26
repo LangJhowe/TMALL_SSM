@@ -74,7 +74,6 @@
 </template>
 
 <script>
-import CODES from '@/api/config'
 import {getPayedOrder, review} from '@/api/user'
 import {getReviews} from '@/api/home'
 import {formatPrice, formatDateCN, formatDAT} from '@/util'
@@ -112,7 +111,7 @@ export default {
     submitReview () {
       review({'oid': this.oid, 'review': this.review}).then(res => {
         const {data} = res
-        if (CODES.SUCCESS == data.code) {
+        if (this.$CODES.SUCCESS == data.code) {
           this.reviewList = data.data
           var pid = data.pid
           this.$router.push({path: '/buyStep/stepReview', query: {oid: this.oid, pid: pid, onlyReview: true}})
@@ -124,7 +123,7 @@ export default {
       if (!pid || !this.onlyReview) return
       getReviews({pid: this.pid, page: this.pager.page}).then(res => {
         const {data} = res
-        if (CODES.SUCCESS == data.code) {
+        if (this.$CODES.SUCCESS == data.code) {
           this.pager.total = data.total
           this.reviewList = data.data.map(item => {
             return {createDate: item.createDate, content: item.content, username: item.user.name}
@@ -135,7 +134,7 @@ export default {
     getPayedOrder () {
       getPayedOrder({'oid': this.oid}).then(res => {
         const {data} = res
-        if (CODES.SUCCESS == data.code) {
+        if (this.$CODES.SUCCESS == data.code) {
           this.orderData = data.data
         }
       })

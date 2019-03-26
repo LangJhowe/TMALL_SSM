@@ -97,7 +97,6 @@
 </template>
 
 <script>
-import CODES from '@/api/config'
 import {formatPrice} from '@/util'
 import {getUser} from '@/util/auth'
 
@@ -120,11 +119,6 @@ export default {
         mobile: [{ required: true, message: '请输入详手机号码(11位)', max: 11, trigger: 'blur' }]
       },
 
-      // 获取orderItemForm
-      orderItemForm: {
-        oiid: ''
-      },
-
       orderList: []
     }
   },
@@ -135,24 +129,25 @@ export default {
         sumPrice += parseFloat(item.count)
       })
       return sumPrice
+    },
+    oiidList () {
+      return this.$store.getters.cartList
     }
   },
   mounted () {
-    if (this.$route.query.hasOwnProperty('oiid')) {
-      this.orderItemForm.oiid = this.$route.query.oiid
-      this.getList()
-    } else {
-      this.orderItemForm.oiid = ''
-    }
+    this.getList()
   },
   methods: {
     onSubmit () {
       return false
     },
     getList () {
-      getOrderItem(this.orderItemForm).then(res => {
+      if (this.$store.getters.cartList == null) return
+      var orderItemList = this.$store.getters.cartList
+      // var orderItemList = [{oiid: 30}]
+      getOrderItem(orderItemList).then(res => {
         const { data } = res
-        if (CODES.SUCCESS == data.code) {
+        if (this.$CODES.SUCCESS == data.code) {
           this.orderList = data.data.map(item => {
             return {
               id: item.id,
@@ -189,13 +184,20 @@ export default {
           if (valid) {
             createOrder(this.orderForm).then(res => {
               const {data} = res
-              if (CODES.SUCCESS == data.code) {
-                this.$router.push({path: '/buyStep/stepPay', query: {total: data.total, oid: data.oid}})
+              if (this.$CODES.SUCCESS == data.code) {
+                this.$store.dispatch('setOidList', data.data)
+                this.$router.push({path: '/buyStep/stepPay', query: {total: data.total}})
               }
             })
           }
         })
       }
+    }
+  },
+  watch: {
+    'route' (to, from) {
+      // if (this.$route.path == to.path)
+      this.getList()
     }
   }
 

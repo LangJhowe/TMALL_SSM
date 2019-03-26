@@ -39,12 +39,13 @@ public class OrderServiceImpl implements OrderService{
     @Transactional(propagation= Propagation.REQUIRED,rollbackForClassName="Exception")
     public float add(Order o, List<OrderItem> ois) {
         float total = 0;
-        add(o);
+        
 
         if(false)
             throw new RuntimeException();
 
         for (OrderItem oi: ois) {
+        	add(o);
             oi.setOid(o.getId());
             orderItemService.update(oi);
             total+=oi.getProduct().getPromotePrice()*oi.getNumber();

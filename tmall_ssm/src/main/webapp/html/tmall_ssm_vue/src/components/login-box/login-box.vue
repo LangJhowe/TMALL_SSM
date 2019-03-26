@@ -48,7 +48,6 @@
 <script>
 import { loginByUser } from '@/api/loginRegistry'
 import { setUser } from '@/util/auth'
-import CODES from '@/api/config'
 export default {
   data () {
     return {
@@ -71,7 +70,7 @@ export default {
       }
       loginByUser(form).then(res => {
         const { data } = res
-        if (CODES.SUCCESS == data.code) {
+        if (this.$CODES.SUCCESS == data.code) {
           this.$store.dispatch('fillUser', data.data)
           setUser(data.data)
           this.$notify({

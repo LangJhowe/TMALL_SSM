@@ -7,6 +7,9 @@ public class User {
 
     private String password;
 
+    //非数据库字段
+    private int cartNum;
+    
     public Integer getId() {
         return id;
     }
@@ -30,4 +33,12 @@ public class User {
     public void setPassword(String password) {
         this.password = password == null ? null : password.trim();
     }
+    
+    public int getCartNum() {
+    	return cartNum;
+    }
+    
+    public void setCartNum (int cartNum) {
+		this.cartNum = cartNum;
+	}
 }

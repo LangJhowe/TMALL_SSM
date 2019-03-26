@@ -23,10 +23,12 @@
       </ul>
       <ul class="right fr">
         <li class="nav-item fl"><router-link to="/buyStep/bought">我的订单</router-link></li>
-        <li class="nav-item fl"><a href="#">
+        <li class="nav-item fl">
+          <router-link to="/buyStep/cart">
             <i class="glyphicon glyphicon-shopping-cart redColor"></i>
-            购物车0件
-          </a></li>
+            购物车{{user?user.cartNum:0}}件
+          </router-link>
+        </li>
       </ul>
     </div>
   </nav>
@@ -78,6 +80,10 @@ export default {
 
 <style lang="scss">
 .f_navbar {
+  position: fixed;
+  z-index: 1000;
+  width: 100%;
+  top: 0;
   padding: 0.05rem 0;
   color: #999;
   background: #f2f2f2;

@@ -88,4 +88,30 @@ public class MyJSONUtil {
 		jo.put("msg",msg);
 		return jo.toJSONString().toString();
 	}
+	public static String returnRespones(String code,String msg) {
+		JSONObject jo = new JSONObject();
+		jo.put("code",code);
+		jo.put("msg",msg);
+		return jo.toJSONString().toString();
+	}
+	public static String returnRespones(int code,String msg) {
+		JSONObject jo = new JSONObject();
+		jo.put("code","" + code);
+		jo.put("msg",msg);
+		return jo.toJSONString().toString();
+	}
+	public static String returnRespones(int code,String msg,Object data) {
+		JSONObject jo = new JSONObject();
+		jo.put("code","" + code);
+		jo.put("msg",msg);
+		jo.put("data",data);
+		return jo.toJSONString().toString();
+	}
+	public static String returnRespones(String code,String msg,Object data) {
+		JSONObject jo = new JSONObject();
+		jo.put("code","" + code);
+		jo.put("msg",msg);
+		jo.put("data",data);
+		return jo.toJSONString().toString();
+	}
 }

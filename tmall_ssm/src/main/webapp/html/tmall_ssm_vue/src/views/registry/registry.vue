@@ -22,7 +22,6 @@
 
 <script>
 import {registry} from '@/api/loginRegistry'
-import CODES from '@/api/config'
 export default {
   data () {
     return {
@@ -67,7 +66,7 @@ export default {
       }
       registry(this.registryForm).then(res => {
         const {data} = res
-        if (CODES.SUCCESS == data.code) {
+        if (this.$CODES.SUCCESS == data.code) {
           this.registrySuccess = true
           // this.$notify({
           //   type: 'success',

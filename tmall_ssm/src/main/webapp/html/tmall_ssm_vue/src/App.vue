@@ -19,6 +19,7 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   font-size: 0.12rem;
   height: 100%;
+  padding-top:0.28rem;
 }
 </style>
 

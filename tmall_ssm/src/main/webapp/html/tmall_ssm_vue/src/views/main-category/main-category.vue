@@ -26,7 +26,6 @@
 <script>
 import SproductWall from '@/components/sproduct-wall/sproduct-wall'
 import {searchByCategory} from '@/api/home'
-import CODES from '@/api/config'
 export default {
   components: {
     SproductWall
@@ -58,14 +57,14 @@ export default {
   },
   computed: {
     cid () {
-      return this.$route.query.cid
+      return this.$route.query.cid + ''
     }
   },
   methods: {
     flashProductData () {
       searchByCategory(this.searchForm).then(res => {
         const {data} = res
-        if (CODES.SUCCESS == data.code) {
+        if (this.$CODES.SUCCESS == data.code) {
           this.productsData = data.data
           this.pager.pages = data.pages
           this.pager.page = data.pageNum
@@ -100,8 +99,6 @@ export default {
   watch: {
     $route: {
       handler: function (to, from) {
-        console.log('to', to)
-        console.log('from', from)
         if (!this.$route.query.hasOwnProperty('cid')) return
         var cid = this.$route.query.cid
         if (cid == '') return

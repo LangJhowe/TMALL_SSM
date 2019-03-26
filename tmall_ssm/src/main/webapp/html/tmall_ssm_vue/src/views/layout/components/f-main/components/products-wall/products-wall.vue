@@ -20,7 +20,6 @@
 <script>
 import HproductCard from '@/components/hproduct-card/hproduct-card'
 import {getProductsByCategory} from '@/api/home.js'
-import CODES from '@/api/config'
 export default {
   components: {
     HproductCard
@@ -33,7 +32,7 @@ export default {
   activated () {
     getProductsByCategory().then((res) => {
       const {data} = res
-      if (data.code == CODES.SUCCESS) {
+      if (this.$CODES.SUCCESS == data.code) {
         this.categoryDatas = data.data
       }
     })

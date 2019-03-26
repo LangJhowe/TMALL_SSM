@@ -41,7 +41,6 @@
 </template>
 
 <script>
-import CODES from '@/api/config'
 import { mapGetters } from 'vuex'
 import { getCategorys } from '@/api/home'
 export default {
@@ -64,7 +63,7 @@ export default {
     showProduct (id) {
       getCategorys(id).then((res) => {
         const {data} = res
-        if (data.code == CODES.SUCCESS) {
+        if (this.$CODES.SUCCESS == data.code) {
           this.categoryData = []
           let keywordsData = data.data
           let eachRowsKeywords = 8
