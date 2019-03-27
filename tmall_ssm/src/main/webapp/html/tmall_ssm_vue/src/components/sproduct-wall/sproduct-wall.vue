@@ -7,7 +7,7 @@
       >
         <img
 
-          :src="`http://localhost:8080/tmall_ssm/img/category/${cid}.jpg`"
+          :src="`/tmall_ssm/img/category/${cid}.jpg`"
           alt=""
         >
       </div>
@@ -52,7 +52,7 @@
         >
           <div class="info">
             <img
-              :src="`http://localhost:8080/tmall_ssm/img/productSingle/${p.firstProductImage.id}.jpg`"
+              :src="`/tmall_ssm/img/productSingle/${p.firstProductImage.id}.jpg`"
               alt=""
             >
             <p class="price">￥ {{p.promotePrice}}</p>

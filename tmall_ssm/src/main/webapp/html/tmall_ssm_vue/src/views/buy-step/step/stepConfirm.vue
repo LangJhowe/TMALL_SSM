@@ -18,7 +18,7 @@
           <el-table-column label="宝贝" align="center" width="500px">
             <template slot-scope="scope">
               <div class="product-info">
-                <img :src="`http://localhost:8080/tmall_ssm/img/productSingle_middle/${scope.row.orderItems[0].product.firstProductImage.id}.jpg`" alt="">
+                <img :src="`/tmall_ssm/img/productSingle_middle/${scope.row.orderItems[0].product.firstProductImage.id}.jpg`" alt="">
                 <router-link :to="{path:'/product',query:{pid:1}}">{{scope.row.orderItems[0].product.name}}</router-link>
               </div>
             </template>

@@ -1,6 +1,6 @@
 <template>
   <a class="hproduct-card">
-    <div class="product-img"><img :src="`http://localhost:8080/tmall_ssm/img/productSingle/${item.firstProductImage.id}.jpg`" alt=""></div>
+    <div class="product-img"><img :src="`/tmall_ssm/img/productSingle/${item.firstProductImage.id}.jpg`" alt=""></div>
     <div class="product-name">{{item.name}}</div>
     <div class="product-price"><span class="unit">￥</span>{{item.promotePrice}}</div>
   </a>

@@ -18,7 +18,7 @@
                 </p>
               </div>
               <div class="column-main">
-                <div class="img-box"><img :src="`http://localhost:8080/tmall_ssm/img/productSingle_middle/${scope.row.orderItems[0].product.firstProductImage.id}.jpg`" alt=""></div>
+                <div class="img-box"><img :src="`/tmall_ssm/img/productSingle_middle/${scope.row.orderItems[0].product.firstProductImage.id}.jpg`" alt=""></div>
                 <div class="product-info">
                   <router-link :to="{path:'/extra/product',query:{pid:scope.row.orderItems[0].product.id}}">{{scope.row.orderItems[0].product.name}}</router-link>
                   <ul class="ensure">

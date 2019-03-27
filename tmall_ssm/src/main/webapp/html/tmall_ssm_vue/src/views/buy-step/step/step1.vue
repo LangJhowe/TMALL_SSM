@@ -29,7 +29,7 @@
             width="600px">
             <template slot-scope="scope">
               <div class="product-box">
-                <img :src="`http://localhost:8080/tmall_ssm/img/productSingle_middle/${scope.row.imgId}.jpg`" alt="">
+                <img :src="`/tmall_ssm/img/productSingle_middle/${scope.row.imgId}.jpg`" alt="">
                 <div class="info">
                   <p>{{scope.row.name}}</p>
                   <ul class="ensure">

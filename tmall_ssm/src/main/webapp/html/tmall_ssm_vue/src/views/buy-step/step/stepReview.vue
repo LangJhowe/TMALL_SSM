@@ -4,7 +4,7 @@
       <div class="review-box" v-if="orderData.id">
         <div class="product-info" >
           <div class="p-img">
-            <img :src="`http://localhost:8080/tmall_ssm/img/productSingle/${orderData.orderItems[0].product.firstProductImage.id}.jpg`" alt="">
+            <img :src="`/tmall_ssm/img/productSingle/${orderData.orderItems[0].product.firstProductImage.id}.jpg`" alt="">
           </div>
           <div class="p-main">
             <p class="name">{{orderData.orderItems[0].product.name}}</p>
