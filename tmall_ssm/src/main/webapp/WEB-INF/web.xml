@@ -44,8 +44,6 @@
 	<!-- 配置静态资源 -->
 <!--   <servlet-mapping> 
 	<servlet-name>default</servlet-name> 
-	<url-pattern>/js/*</url-pattern> 
-	<url-pattern>/css/*</url-pattern>
 	<url-pattern>/static/*</url-pattern>
 	<url-pattern>/img/*</url-pattern> 
   </servlet-mapping> -->
@@ -67,7 +65,7 @@
     <url-pattern>/</url-pattern>
   </servlet-mapping>
 
-    <welcome-file-list>
+<!--     <welcome-file-list>
         <welcome-file>index.html</welcome-file>
-    </welcome-file-list>
+    </welcome-file-list> -->
 </web-app>
