@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const service = axios.create({
-  // baseURL: 'http://127.0.0.1:8080/tmall_ssm',
+  baseURL: 'http://127.0.0.1:8080/tmall_ssm',
   time: 5000, // request timeout
   headers: {
     // 'Content-Type': 'application/json;charset=UTF-8'

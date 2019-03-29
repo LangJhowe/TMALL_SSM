@@ -10,7 +10,7 @@
           :render-header="renderSelectAll">
           <template slot-scope="scope">
             <div class="cell-inner">
-              <el-checkbox v-model="scope.row.isSelected" @change="rowSelect"><img :src="`/tmall_ssm/img/productSingle_middle/${scope.row.data.product.firstProductImage.id}.jpg`"></el-checkbox>
+              <el-checkbox v-model="scope.row.isSelected" @change="rowSelect"><img :src="`/img/productSingle_middle/${scope.row.data.product.firstProductImage.id}.jpg`"></el-checkbox>
             </div>
           </template>
         </el-table-column>

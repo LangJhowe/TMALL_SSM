@@ -4,7 +4,7 @@
       <div class="category-img">
         <img
           v-if="productData.cid&&productData.cid!=0"
-          :src="`/tmall_ssm/img/category/${productData.cid}.jpg`"
+          :src="`/img/category/${productData.cid}.jpg`"
           alt=""
         >
       </div>
@@ -14,7 +14,7 @@
             <img
               v-if="choosenImgId&&choosenImgId!=0"
               class="bigImg"
-              :src="`/tmall_ssm/img/productSingle/${choosenImgId}.jpg`"
+              :src="`/img/productSingle/${choosenImgId}.jpg`"
               alt=""
             >
             <ul class="smallImgs">
@@ -24,7 +24,7 @@
                 @click="selectBigImg(img.id)"
               >
                 <img
-                  :src="`/tmall_ssm/img/productSingle_small/${img.id}.jpg`"
+                  :src="`/img/productSingle_small/${img.id}.jpg`"
                   alt=""
                 />
               </li>
@@ -105,7 +105,7 @@
             </div>
             <ul class="product-detail-imgs">
               <li v-for="detailImg in productData.productDetailImages" :key="detailImg.id">
-                <img :src="`/tmall_ssm/img/productDetail/${detailImg.id}.jpg`" alt="">
+                <img :src="`/img/productDetail/${detailImg.id}.jpg`" alt="">
               </li>
             </ul>
           </el-tab-pane>

@@ -7,7 +7,7 @@
       >
         <img
 
-          :src="`/tmall_ssm/img/category/${cid}.jpg`"
+          :src="`/img/category/${cid}.jpg`"
           alt=""
         >
       </div>
@@ -52,7 +52,7 @@
         >
           <div class="info">
             <img
-              :src="`/tmall_ssm/img/productSingle/${p.firstProductImage.id}.jpg`"
+              :src="`/img/productSingle/${p.firstProductImage.id}.jpg`"
               alt=""
             >
             <p class="price">￥ {{p.promotePrice}}</p>
@@ -200,6 +200,7 @@ export default {
       flex-direction: column;
       img {
         width: 2.33rem;
+        height:2.33rem;
       }
       p {
         padding-left: 0.1rem;
