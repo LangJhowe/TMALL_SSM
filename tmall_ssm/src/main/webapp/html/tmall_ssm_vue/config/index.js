@@ -10,7 +10,16 @@ module.exports = {
     // Paths
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
-    proxyTable: {},
+    proxyTable: {
+      '/':{
+        // //测试环境
+        target: 'http://localhost:8080/tmall_ssm',
+        changeOrigin: true, // 是否跨域
+        // pathRewrite: {
+        //   '^/': '' // 需要rewrite重写的,
+        // }
+      }
+    },
 
     // Various Dev Server settings
     host: 'localhost', // can be overwritten by process.env.HOST
@@ -51,16 +60,6 @@ module.exports = {
     assetsRoot: path.resolve(__dirname, '../dist'),
     assetsSubDirectory: 'static',
     assetsPublicPath: './',
-    // proxyTable: {
-    //   '/':{
-    //     //测试环境
-    //     target: '127.0.0.1:8080/tmall_ssm',
-    //     changeOrigin: true, // 是否跨域
-    //     pathRewrite: {
-    //       '^/': '' // 需要rewrite重写的,
-    //     }
-    //   }
-    // },
     /**
      * Source Maps
      */

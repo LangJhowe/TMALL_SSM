@@ -976,4 +976,34 @@ public class ForeController {
 		orderService.update(o);
 		return MyJSONUtil.returnRespones("000000", "成功删除该交易订单");
 	}
+	
+	//22非跨域test
+	@ResponseBody
+	@RequestMapping(value="/getProductTest",method=RequestMethod.POST,produces= {"application/json;charset=UTF-8"})
+	//@RequestMapping("/getProductTest")
+	//@RequestBody String param
+	public String getProductTest(@RequestBody String param) {
+    	JSONObject rjo = new JSONObject();
+    	System.out.println("param:" + param);
+    	JSONObject gjo = JSONObject.parseObject(param);
+    	System.out.println("gjo:" + gjo.toJSONString().toString());
+    	MyJSONUtil.setJo(gjo);
+    	if(!MyJSONUtil.isContainKey("pid")) return MyJSONUtil.getErrorResponse(600041);
+    	if(!MyJSONUtil.keyHasValue("pid")) return MyJSONUtil.getErrorResponse(600042);
+    	int pid = Integer.parseInt(gjo.get("pid").toString());
+    	Product result = productService.get(pid);
+    	List<ProductImage> productSingleImages = productImageService.list(pid, ProductImageService.type_single);
+    	List<ProductImage> productDetailImages = productImageService.list(pid, ProductImageService.type_detail);
+    	result.setProductSingleImages(productSingleImages);
+    	result.setProductDetailImages(productDetailImages);
+    	productService.setSaleAndReviewNumber(result);
+    	List<PropertyValue> pvs = propertyValueService.list(pid);
+    	
+    	JSONObject djo = new JSONObject();
+    	djo.put("propertys", pvs);
+    	djo.put("data", result);
+    	rjo.put("code", "000000");
+    	rjo.put("data",djo);
+    	return JSONObject.toJSONString(rjo).toString();
+	}
 }

@@ -43,14 +43,26 @@ export function searchByCategory (form) {
 }
 
 // getProduct
+// export function getProduct (pid) {
+//   return request({
+//     url: '/getProduct',
+//     method: 'post',
+//     data: Qs.stringify({pid})
+//   })
+// }
+// getProduct
 export function getProduct (pid) {
   return request({
-    url: '/getProduct',
+    url: '/getProductTest',
     method: 'post',
-    data: Qs.stringify({pid})
+    data: {
+      'pid': pid
+    },
+    headers: {
+      'Content-Type': 'application/json;charset=UTF-8'
+    }
   })
 }
-
 // getReview
 export function getReviews (form) {
   return request({
